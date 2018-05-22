@@ -1,0 +1,25 @@
+{
+  "name": "tamper",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:pd4d10/tamper.git",
+  "author": "Rongjian Zhang <pd4d10@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "webpack"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0-beta.47",
+    "@babel/preset-react": "^7.0.0-beta.47",
+    "@types/chrome": "^0.0.66",
+    "babel-loader": "^8.0.0-beta",
+    "clean-webpack-plugin": "^0.1.19",
+    "html-webpack-plugin": "^3.2.0",
+    "webpack": "^4.8.3",
+    "webpack-cli": "^2.1.3",
+    "webpack-merge": "^4.1.2"
+  },
+  "dependencies": {
+    "react-monaco-editor": "^0.17.0"
+  }
+}

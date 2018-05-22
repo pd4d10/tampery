@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+  "name": "Tamper",
+  "version": "0.0.1",
+  "description": "",
+  "homepage_url": "https://github.com/pd4d10/tamper",
+  "background": {
+    "scripts": ["dist/background.js"]
+  },
+  "permissions": ["webRequest", "<all_urls>", "storage"],
+  "browser_action": {
+    "default_popup": "dist/popup.html"
+  }
+}
