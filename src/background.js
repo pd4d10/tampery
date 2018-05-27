@@ -1,4 +1,4 @@
-import { upperFirst } from 'lodash-es'
+// import { upperFirst } from 'lodash-es'
 import { v4 } from 'uuid'
 
 // chrome.webRequest.onSendHeaders.addListener(
@@ -19,8 +19,8 @@ chrome.browserAction.onClicked.addListener(tab => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.type) {
     case 'add':
-      const { level, code, filter } = message.payload
-      chrome.webRequest['on' + upperFirst(level)].addListener(
+      const { lifecycle, code, filter } = message.payload
+      chrome.webRequest[lifecycle].addListener(
         new Function('details', code),
         { urls: ['<all_urls>'] },
         ['requestHeaders'],

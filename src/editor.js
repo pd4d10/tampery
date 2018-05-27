@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
 import { render } from 'react-dom'
+import { HashRouter as Router, Route } from 'react-router-dom'
 import MonacoEditor from 'react-monaco-editor'
-import { Table, Button } from 'antd'
+import { Table, Button, Select, Input } from 'antd'
 import 'antd/dist/antd.css'
+
+const { Option } = Select
 
 // interface Payload {
 //   id: string
@@ -13,6 +16,24 @@ import 'antd/dist/antd.css'
 // }
 
 const storageKey = 'data'
+
+const resourceTypes = [
+  'main_frame',
+  'sub_frame',
+  'stylesheet',
+  'script',
+  'image',
+  'font',
+  'object',
+  'xmlhttprequest',
+  'ping',
+  'csp_report',
+  'media',
+  'websocket',
+  'other',
+]
+
+const lifecycles = ['onBeforeSendHeaders']
 
 class List extends Component {
   state = {
@@ -53,7 +74,7 @@ class List extends Component {
       <div>
         <Button
           onClick={() => {
-            this.props.onAdd()
+            this.props.history.push('/add')
           }}
         >
           Add
@@ -72,12 +93,53 @@ class Add extends Component {
     name: '',
     code: '// type your code...\n\n',
     lifecycle: '',
-    filter: '',
+    resourceTypes: [],
+    urls: [],
+    // filter: '',
   }
 
   render() {
+    const s = this.state
     return (
       <div>
+        <Input
+          value={s.name}
+          onChange={e => this.setState({ name: e.target.value })}
+        />
+        <Select
+          style={{ minWidth: 300 }}
+          value={s.lifecycle}
+          onChange={lifecycle => this.setState({ lifecycle })}
+        >
+          {lifecycles.map(item => (
+            <Option key={item} value={item}>
+              {item}
+            </Option>
+          ))}
+        </Select>
+        <Select
+          style={{ minWidth: 300 }}
+          mode="multiple"
+          value={s.resourceTypes}
+          onChange={resourceTypes => this.setState({ resourceTypes })}
+        >
+          {resourceTypes.map(item => (
+            <Option key={item} value={item}>
+              {item}
+            </Option>
+          ))}
+        </Select>
+        <Select
+          style={{ minWidth: 300 }}
+          mode="tags"
+          onChange={urls => this.setState({ urls })}
+        >
+          {s.urls.map(item => (
+            <Option key={item} value={item}>
+              {item}
+            </Option>
+          ))}
+        </Select>
         <MonacoEditor
           width="400"
           height="300"
@@ -96,13 +158,14 @@ class Add extends Component {
         />
         <Button
           onClick={() => {
-            chrome.runtime.sendMessage({
-              type: 'add',
-              payload: {
-                level: 'sendHeaders',
-                code: 'console.log(details)',
-              },
-            })
+            // chrome.runtime.sendMessage({
+            //   type: 'add',
+            //   payload: {
+            //     lifecycle: s.lifecycle,
+            //     code: s.code,
+            //   },
+            // })
+            console.log(s)
           }}
         >
           Submit
@@ -113,27 +176,14 @@ class Add extends Component {
 }
 
 class App extends Component {
-  state = {
-    isAddPage: false,
-  }
-
   render() {
     return (
-      <div>
-        {this.state.isAddPage ? (
-          <Add
-            onBack={() => {
-              this.setState({ isAddPage: false })
-            }}
-          />
-        ) : (
-          <List
-            onAdd={() => {
-              this.setState({ isAddPage: true })
-            }}
-          />
-        )}
-      </div>
+      <Router>
+        <React.Fragment>
+          <Route exact path="/" component={List} />
+          <Route exact path="/add" component={Add} />
+        </React.Fragment>
+      </Router>
     )
   }
 }
