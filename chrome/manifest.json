@@ -7,7 +7,7 @@
   "background": {
     "scripts": ["dist/background.js"]
   },
-  "permissions": ["webRequest", "<all_urls>", "storage"],
+  "permissions": ["webRequest", "webRequestBlocking", "<all_urls>", "storage"],
   "browser_action": {},
   "content_security_policy":
     "script-src 'self' 'unsafe-eval'; object-src 'self'"

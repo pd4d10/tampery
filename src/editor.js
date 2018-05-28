@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { render } from 'react-dom'
 import { HashRouter as Router, Route } from 'react-router-dom'
 import MonacoEditor from 'react-monaco-editor'
@@ -90,56 +90,13 @@ class List extends Component {
 
 class Add extends Component {
   state = {
-    name: '',
     code: '// type your code...\n\n',
-    lifecycle: '',
-    resourceTypes: [],
-    urls: [],
-    // filter: '',
   }
 
   render() {
     const s = this.state
     return (
       <div>
-        <Input
-          value={s.name}
-          onChange={e => this.setState({ name: e.target.value })}
-        />
-        <Select
-          style={{ minWidth: 300 }}
-          value={s.lifecycle}
-          onChange={lifecycle => this.setState({ lifecycle })}
-        >
-          {lifecycles.map(item => (
-            <Option key={item} value={item}>
-              {item}
-            </Option>
-          ))}
-        </Select>
-        <Select
-          style={{ minWidth: 300 }}
-          mode="multiple"
-          value={s.resourceTypes}
-          onChange={resourceTypes => this.setState({ resourceTypes })}
-        >
-          {resourceTypes.map(item => (
-            <Option key={item} value={item}>
-              {item}
-            </Option>
-          ))}
-        </Select>
-        <Select
-          style={{ minWidth: 300 }}
-          mode="tags"
-          onChange={urls => this.setState({ urls })}
-        >
-          {s.urls.map(item => (
-            <Option key={item} value={item}>
-              {item}
-            </Option>
-          ))}
-        </Select>
         <MonacoEditor
           width="400"
           height="300"
@@ -158,14 +115,16 @@ class Add extends Component {
         />
         <Button
           onClick={() => {
-            // chrome.runtime.sendMessage({
-            //   type: 'add',
-            //   payload: {
-            //     lifecycle: s.lifecycle,
-            //     code: s.code,
-            //   },
-            // })
-            console.log(s)
+            const message = {
+              type: 'add',
+              code: this.state.code,
+            }
+            console.log('sendMessage:', message)
+            chrome.runtime.sendMessage(message, response => {
+              console.log('Response:', response)
+              if (response.message) {
+              }
+            })
           }}
         >
           Submit
@@ -179,10 +138,10 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <React.Fragment>
+        <Fragment>
           <Route exact path="/" component={List} />
           <Route exact path="/add" component={Add} />
-        </React.Fragment>
+        </Fragment>
       </Router>
     )
   }
