@@ -12,6 +12,17 @@ import { v4 } from 'uuid'
 //   ['requestHeaders'],
 // )
 
+// import ua from './examples/user-agent'
+import qs from './examples/remove-query-string'
+// checkPayload(ua)
+// chrome.webRequest[ua.lifecycle].addListener(ua.context, ua.filter, ua.options)
+const { payload } = qs
+chrome.webRequest[payload.lifecycle].addListener(
+  payload.context,
+  payload.filter,
+  payload.options,
+)
+
 function checkPayload(payload) {
   // return true
 }
