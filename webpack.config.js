@@ -33,6 +33,9 @@ module.exports = {
       },
     ],
   },
+  node: {
+    fs: 'empty'
+  },
   plugins: [
     new CleanWebpackPlugin(['chrome/dist']),
     new MonacoWebpackPlugin(),
