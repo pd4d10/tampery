@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from 'react'
 import { render } from 'react-dom'
 import { withStyles } from '@material-ui/core/styles'
+import { storage } from './utils'
+import { v4 } from 'uuid'
 
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
@@ -11,8 +13,26 @@ import ListSubheader from '@material-ui/core/ListSubheader'
 import Button from '@material-ui/core/Button'
 import Switch from '@material-ui/core/Switch'
 import AddIcon from '@material-ui/icons/Add'
-import { HashRouter as Router, Route } from 'react-router-dom'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import Dialog from '@material-ui/core/Dialog'
+import TextField from '@material-ui/core/TextField'
+
+// import { HashRouter as Router, Route } from 'react-router-dom'
 import MonacoEditor from 'react-monaco-editor'
+
+import './reset.css'
+
+const examples = [
+  {
+    name: 'Change User-Agent(Change request headers)',
+    code: require('raw-loader!./examples/change-user-agent'),
+  },
+  {
+    name: 'Remove UTM tokens(Change URL and redirect)',
+    code: require('raw-loader!./examples/remove-utm-tokens'),
+  },
+]
+console.log(examples)
 
 // interface Payload {
 //   id: string
@@ -22,60 +42,156 @@ import MonacoEditor from 'react-monaco-editor'
 //   filter: string
 // }
 
-const storageKey = 'data'
-
-class Container extends Component {
+class App extends Component {
   state = {
-    data: [],
+    data: {},
+    open: false,
     code: '// type your code...\n\n',
+    selectedId: null,
   }
 
   componentDidMount() {
-    // chrome.storage.sync.get([storageKey], items => {
-    //   if (items.data) {
-    //     this.setState({ data: items.data })
-    //   }
-    // })
+    storage.get().then(data => {
+      this.setState({ data })
+      const keys = Object.keys(data)
+      if (keys.length) {
+        this.setState({
+          selectedId: keys[0],
+          code: this.state.data[keys[0]].code,
+        })
+      }
+    })
   }
 
-  // transformToDataSource = data =>
-  //   data.map(item => ({
-  //     ...item,
-  //     key: item.id,
-  //   }))
+  sendMessage = message => {
+    console.log('sendMessage:', message)
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage(message, response => {
+        console.log('Response:', response)
+        if (response.message) {
+          alert(response.message)
+        } else {
+          resolve()
+        }
+      })
+    })
+  }
+
+  handleToggleActive = async id => {
+    if (this.state.data[id].active) {
+      this.sendMessage({ type: 'deactivate', id })
+    }
+  }
+
+  updateDataFromStorage = async () => {
+    const data = await storage.get()
+    this.setState({ data })
+  }
+
+  handleSave = async () => {
+    await this.sendMessage({
+      id: this.state.selectedId,
+      type: 'add',
+      code: this.state.code,
+      active: true,
+    })
+    await this.updateDataFromStorage()
+  }
+
+  handleAdd = code => {
+    const id = v4()
+    this.setState({
+      open: false,
+      selectedId: id,
+      data: {
+        ...this.state.data,
+        [id]: {
+          name: 'Untitled',
+          active: false,
+          code,
+        },
+      },
+      code,
+    })
+  }
 
   render() {
+    const { state } = this
+    const ids = Object.keys(state.data)
     return (
-      <div style={{ display: 'flex' }}>
+      <div style={{ display: 'flex', height: '100%' }}>
         <div style={{ width: 250 }}>
           <List>
-            <ListItem button>
-              <ListItemText primary="Wi-Fi" />
-              <ListItemSecondaryAction>
-                <Switch onChange={() => {}} checked={true} />
-              </ListItemSecondaryAction>
-            </ListItem>
+            {ids.length
+              ? ids.map(id => (
+                  <ListItem
+                    button
+                    key={id}
+                    onClick={() => {
+                      this.setState({ selectedId: id })
+                    }}
+                  >
+                    <ListItemText primary={state.data[id].name} />
+                    <ListItemSecondaryAction>
+                      <Switch
+                        onChange={() => this.handleToggleActive(id)}
+                        checked={state.data[id].active}
+                      />
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                ))
+              : 'No snippets yet'}
           </List>
         </div>
-        <div style={{ flexGrow: 1 }}>
-          <MonacoEditor
-            // width="400"
-            // height="300"
-            language="javascript"
-            // theme="vs-dark"
-            value={this.state.code}
-            options={
-              {
-                // selectOnLineNumbers: true,
+        <div
+          style={{
+            flexGrow: 1,
+            // padding: 20,
+          }}
+        >
+          <div>
+            <TextField
+              required
+              label="Name"
+              value={state.name}
+              onChange={e => {
+                this.setState({ name: e.target.value })
+              }}
+              // className={classes.textField}
+              // fullWidth
+              margin="normal"
+            />
+          </div>
+          <div
+            style={{ height: document.body.clientHeight - 200, marginTop: 30 }}
+          >
+            <MonacoEditor
+              language="javascript"
+              // theme="vs-dark"
+              value={state.code}
+              options={
+                {
+                  // selectOnLineNumbers: true,
+                }
               }
-            }
-            onChange={value => {
-              this.setState({ code: value })
-            }}
-            editorDidMount={(editor, monaco) => {
-              editor.focus()
-            }}
-          />
+              onChange={value => {
+                this.setState({ code: value })
+              }}
+              editorDidMount={(editor, monaco) => {
+                editor.focus()
+              }}
+            />
+          </div>
+          <div style={{ paddingTop: 20, paddingLeft: 63 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              // className={classes.button}
+              onClick={this.handleSave}
+            >
+              Save
+            </Button>
+          </div>
         </div>
         <Button
           variant="fab"
@@ -83,32 +199,45 @@ class Container extends Component {
           aria-label="add"
           className={this.props.classes.add}
           onClick={() => {
-            const message = {
-              type: 'add',
-              code: this.state.code,
-            }
-            console.log('sendMessage:', message)
-            chrome.runtime.sendMessage(message, response => {
-              console.log('Response:', response)
-              if (response.message) {
-              }
-            })
+            this.setState({ open: true })
           }}
         >
           <AddIcon />
         </Button>
+        <Dialog
+          onClose={() => {
+            this.setState({ open: false })
+          }}
+          open={state.open}
+        >
+          <DialogTitle>Add script</DialogTitle>
+          <div>
+            <List>
+              {examples.map(({ name, code }) => (
+                <ListItem
+                  button
+                  key={name}
+                  onClick={() => this.handleAdd(code)}
+                  key={name}
+                >
+                  <ListItemText primary={name} />
+                </ListItem>
+              ))}
+            </List>
+          </div>
+        </Dialog>
       </div>
     )
   }
 }
 
-Container = withStyles(theme => ({
-  root: {
-    backgroundColor: theme.palette.background.paper,
-    width: 500,
-    position: 'relative',
-    minHeight: 200,
-  },
+App = withStyles(theme => ({
+  // root: {
+  //   backgroundColor: theme.palette.background.paper,
+  //   width: 500,
+  //   position: 'relative',
+  //   minHeight: 200,
+  // },
   add: {
     position: 'absolute',
     bottom: theme.spacing.unit * 2,
@@ -118,29 +247,9 @@ Container = withStyles(theme => ({
   //   color: theme.palette.common.white,
   //   backgroundColor: green[500],
   // },
-}))(Container)
-
-class Add extends Component {
-  render() {
-    // const s = this.state
-    return <div />
-  }
-}
-
-class App extends Component {
-  render() {
-    return (
-      // <Router>
-      //   <Fragment>
-      //     <Route exact path="/" component={Container} />
-      //     <Route exact path="/add" component={Add} />
-      //   </Fragment>
-      // </Router>
-      <Container />
-    )
-  }
-}
+}))(App)
 
 const root = document.createElement('div')
+root.style.height = '100%'
 document.body.appendChild(root)
 render(<App />, root)

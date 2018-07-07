@@ -1,61 +1,96 @@
-// import { upperFirst } from 'lodash-es'
-import { v4 } from 'uuid'
+import { storage } from './utils'
 
-// chrome.webRequest.onSendHeaders.addListener(
-//   details => {
-//     console.log('onSendHeaders', details, data)
-//     // data[details.tabId] = {
-//     //   request: details.requestHeaders,
-//     // }
-//   },
-//   filter,
-//   ['requestHeaders'],
-// )
+// Save lifecycle and callback reference for removal
+const mapper = {}
 
-// import ua from './examples/user-agent'
-import qs from './examples/remove-query-string'
-// checkPayload(ua)
-// chrome.webRequest[ua.lifecycle].addListener(ua.context, ua.filter, ua.options)
-const { payload } = qs
-chrome.webRequest[payload.lifecycle].addListener(
-  payload.context,
-  payload.filter,
-  payload.options,
-)
+const LIFECYCLES = [
+  'onBeforeRequest',
+  'onBeforeSendHeaders',
+  'onSendHeaders',
+  'onHeadersReceived',
+  'onAuthRequired',
+  'onBeforeRedirect',
+  'onResponseStarted',
+  'onCompleted',
+  'onErrorOccurred',
+]
 
-function checkPayload(payload) {
-  // return true
+async function handleAdd(id, code) {
+  const blob = new Blob([code], { type: 'text/javascript' })
+  const url = URL.createObjectURL(blob)
+
+  // Do not compile dynamic import here
+  // https://github.com/webpack/webpack/pull/7034
+  const { default: payload } = await import(/* webpackIgnore: true */ url)
+
+  if (!LIFECYCLES.includes(payload.lifecycle)) {
+    throw new Error('Invalid lifecycle')
+  }
+  if (typeof payload.callback !== 'function') {
+    throw new Error('callback should be a function')
+  }
+  if (!payload.filter) {
+    throw new Error('Lack of filter')
+  }
+  if (!payload.options) {
+    throw new Error('Lack of options')
+  }
+
+  chrome.webRequest[payload.lifecycle].addListener(
+    payload.callback,
+    payload.filter,
+    payload.options,
+  )
+  console.log('Listener added:', id)
+  mapper[id] = {
+    lifecycle: payload.lifecycle,
+    callback: payload.callback,
+  }
 }
 
+function handleDelete(id) {
+  if (!mapper[id]) return
+  const { lifecycle, callback } = mapper[id]
+  chrome.webRequest[lifecycle].removeListener(callback)
+  console.log('Listener removed:', id)
+  delete mapper[id]
+}
+
+// Browser action click
 chrome.browserAction.onClicked.addListener(tab => {
   window.open(chrome.runtime.getURL('dist/editor.html'))
 })
 
+// Add listeners already stored at sync
+async function addListeners() {
+  const data = await storage.get()
+  Object.entries(data).forEach(([id, { name, code }]) => {
+    handleAdd(id, code)
+  })
+}
+addListeners()
+
+// Add event listeners: add, delete, ...
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('Message:', message)
-  ;(async () => {
+  ;(async function handleMessage() {
     try {
       switch (message.type) {
-        case 'add':
-          const blob = new Blob([message.code], { type: 'text/javascript' })
-          const url = URL.createObjectURL(blob)
-
-          // https://github.com/webpack/webpack/pull/7034
-          const {
-            default: payload,
-          } = await import(/* webpackIgnore: true */ url)
-          checkPayload(payload)
-
-          chrome.webRequest[payload.lifecycle].addListener(
-            payload.context,
-            payload.filter,
-            payload.options,
-          )
-
-          // chrome.storage.sync.set()
+        case 'add': {
+          handleDelete(message.id)
+          await handleAdd(message.id, message.code)
+          const data = await storage.get()
+          data[message.id] = { code: message.code, active: message.active }
+          await storage.set(data)
           break
-        case 'delete':
+        }
+        case 'delete': {
+          handleDelete(message.id)
+          const data = await storage.get()
+          delete data[message.id]
+          await storage.set(data)
           break
+        }
       }
       sendResponse({ message: '' })
     } catch (err) {
