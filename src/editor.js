@@ -1,26 +1,33 @@
 import React, { Component, Fragment } from 'react'
 import { render } from 'react-dom'
-import { withStyles } from '@material-ui/core/styles'
-import { storage } from './utils'
 import { v4 } from 'uuid'
-
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
-import ListItemText from '@material-ui/core/ListItemText'
-import ListSubheader from '@material-ui/core/ListSubheader'
-import Button from '@material-ui/core/Button'
-import Switch from '@material-ui/core/Switch'
-import AddIcon from '@material-ui/icons/Add'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import Dialog from '@material-ui/core/Dialog'
-import TextField from '@material-ui/core/TextField'
-
-// import { HashRouter as Router, Route } from 'react-router-dom'
 import MonacoEditor from 'react-monaco-editor'
+import {
+  Button,
+  Nav,
+  Navbar,
+  NavbarBrand,
+  NavItem,
+  NavLink,
+  ListGroup,
+  ListGroupItem,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  FormGroup,
+  Label,
+  Jumbotron,
+  ModalFooter,
+  Input,
+  Container,
+  Collapse,
+} from 'reactstrap'
+import Toggle from 'react-toggle'
+import { storage } from './utils'
 
-import './reset.css'
+import 'react-toggle/style.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import './editor.css'
 
 const examples = [
   {
@@ -50,8 +57,10 @@ class App extends Component {
   state = {
     data: {},
     open: false,
-    code: '// type your code...\n\n',
+    name: '',
+    code: '',
     selectedId: null,
+    confirmDeleteModalOpen: false,
   }
 
   componentDidMount() {
@@ -88,6 +97,7 @@ class App extends Component {
     if (ids.length) {
       this.setState({
         selectedId: ids[0],
+        name: this.state.data[ids[0]].name,
         code: this.state.data[ids[0]].code,
       })
     }
@@ -102,9 +112,11 @@ class App extends Component {
       active: true,
     })
     await this.updateDataFromStorage()
+    this.toggleEdit()
   }
 
   handleDelete = async () => {
+    this.toggleConfirmDelete()
     await this.sendMessage({ type: 'delete', id: this.state.selectedId })
     await this.updateDataFromStorage()
   }
@@ -122,147 +134,165 @@ class App extends Component {
           code,
         },
       },
+      name: 'Untitled',
       code,
     })
+  }
+
+  toggleConfirmDelete = () => {
+    this.setState({
+      confirmDeleteModalOpen: !this.state.confirmDeleteModalOpen,
+    })
+  }
+
+  toggleEdit = id => {
+    if (this.state.open) {
+      this.setState({ open: false })
+    } else {
+      const selected = this.state.data[id]
+      this.setState({
+        open: true,
+        selectedId: id,
+        name: selected.name,
+        code: selected.code,
+      })
+    }
   }
 
   render() {
     const { state } = this
     const ids = Object.keys(state.data)
     return (
-      <div style={{ display: 'flex', height: '100%' }}>
-        <div style={{ width: 250 }}>
-          <List>
-            {ids.length
-              ? ids.map(id => (
-                  <ListItem
-                    button
-                    key={id}
-                    onClick={() => {
-                      this.setState({ selectedId: id })
-                    }}
-                  >
-                    <ListItemText primary={state.data[id].name} />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        onChange={() => this.handleToggleActive(id)}
-                        checked={state.data[id].active}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                ))
-              : 'No snippets yet'}
-          </List>
-        </div>
-        <div
-          style={{
-            flexGrow: 1,
-            // padding: 20,
-          }}
+      <div>
+        <Modal
+          isOpen={state.confirmDeleteModalOpen}
+          toggle={this.toggleConfirmDelete}
         >
-          <div>
-            <TextField
-              required
-              label="Name"
-              value={state.name}
-              onChange={e => {
-                this.setState({ name: e.target.value })
-              }}
-              // className={classes.textField}
-              // fullWidth
-              margin="normal"
-            />
-          </div>
-          <div
-            style={{ height: document.body.clientHeight - 200, marginTop: 30 }}
-          >
+          <ModalHeader>Confirm</ModalHeader>
+          <ModalBody>
+            This operation will delete this item permanently. If you want to
+            keep the code for future use, disable it instead.
+          </ModalBody>
+          <ModalFooter>
+            <Button color="danger" onClick={this.handleDelete}>
+              Delete
+            </Button>{' '}
+            <Button color="secondary" onClick={this.toggleConfirmDelete}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal>
+
+        <Modal
+          isOpen={state.open}
+          toggle={this.toggleEdit}
+          className="edit-modal"
+        >
+          <ModalHeader>Edit</ModalHeader>
+          <ModalBody>
+            <FormGroup>
+              <Label for="script-name">Name</Label>
+              <Input
+                id="script-name"
+                value={state.name}
+                onChange={e => {
+                  this.setState({ name: e.target.value })
+                }}
+              />
+            </FormGroup>
             <MonacoEditor
               language="javascript"
               // theme="vs-dark"
+              height={400}
+              // width={600}
               value={state.code}
               options={{ contextmenu: false }}
               onChange={value => {
                 this.setState({ code: value })
               }}
               editorDidMount={(editor, monaco) => {
-                editor.focus()
+                // editor.focus()
               }}
             />
-          </div>
-          <div style={{ paddingTop: 20, paddingLeft: 63 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={this.handleSave}
-            >
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={this.handleSave}>
               Save
+            </Button>{' '}
+            <Button color="secondary" onClick={this.toggleEdit}>
+              Cancel
             </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={this.handleDelete}
-            >
-              Delete
-            </Button>
-          </div>
-        </div>
-        <Button
-          variant="fab"
-          color="primary"
-          aria-label="add"
-          className={this.props.classes.add}
-          onClick={() => {
-            this.setState({ open: true })
-          }}
-        >
-          <AddIcon />
-        </Button>
-        <Dialog
-          onClose={() => {
-            this.setState({ open: false })
-          }}
-          open={state.open}
-        >
-          <DialogTitle>Add script</DialogTitle>
-          <div>
-            <List>
-              {examples.map(({ name, code }) => (
-                <ListItem
-                  button
-                  key={name}
-                  onClick={() => this.handleAdd(code)}
-                  key={name}
-                >
-                  <ListItemText primary={name} />
-                </ListItem>
-              ))}
-            </List>
-          </div>
-        </Dialog>
+          </ModalFooter>
+        </Modal>
+
+        <Navbar dark color="dark" expand="md">
+          <NavbarBrand href="#">Dashboard</NavbarBrand>
+          <Collapse navbar>
+            <Nav className="mr-auto" navbar>
+              <NavItem>
+                <NavLink href="/components/">Home</NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink href="/components/">About</NavLink>
+              </NavItem>
+            </Nav>
+          </Collapse>
+        </Navbar>
+        <Container>
+          {ids.length ? (
+            <div style={{ marginTop: 20 }}>
+              <ListGroup>
+                {ids.map(id => (
+                  <ListGroupItem
+                    key={id}
+                    onClick={() => {
+                      this.setState({ selectedId: id })
+                    }}
+                  >
+                    {state.data[id].name}
+                    <div style={{ float: 'right' }}>
+                      <Toggle
+                        checked={state.data[id].active}
+                        onChange={() => this.handleToggleActive(id)}
+                      />
+                      <Button
+                        outline
+                        size="sm"
+                        color="primary"
+                        onClick={() => this.toggleEdit(id)}
+                      >
+                        Edit
+                      </Button>{' '}
+                      <Button
+                        outline
+                        size="sm"
+                        color="danger"
+                        onClick={this.toggleConfirmDelete}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </ListGroupItem>
+                ))}
+              </ListGroup>
+            </div>
+          ) : (
+            <Jumbotron>
+              <p className="lead">Seems we don't have any scripts yet.</p>
+              <p className="lead">
+                Click add button at bottom right corner to add a new one :)
+              </p>
+              <p className="lead">
+                <Button color="primary">Add script</Button>
+              </p>
+            </Jumbotron>
+          )}
+        </Container>
       </div>
     )
   }
 }
 
-App = withStyles(theme => ({
-  // root: {
-  //   backgroundColor: theme.palette.background.paper,
-  //   width: 500,
-  //   position: 'relative',
-  //   minHeight: 200,
-  // },
-  add: {
-    position: 'absolute',
-    bottom: theme.spacing.unit * 2,
-    right: theme.spacing.unit * 2,
-  },
-  // fabGreen: {
-  //   color: theme.palette.common.white,
-  //   backgroundColor: green[500],
-  // },
-}))(App)
-
 const root = document.createElement('div')
-root.style.height = '100%'
 document.body.appendChild(root)
 render(<App />, root)
