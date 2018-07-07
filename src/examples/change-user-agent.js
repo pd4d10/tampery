@@ -1,9 +1,5 @@
 /**
  * Change all requests' User-Agent to iOS Safari
- *
- * For more information, see:
- * https://developer.chrome.com/extensions/webRequest
- * https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/webRequest
  */
 
 const myUserAgent =

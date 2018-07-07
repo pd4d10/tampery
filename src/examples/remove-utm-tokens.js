@@ -1,10 +1,6 @@
 /**
  * Remove Google Analytics UTM tokens
  * https://github.com?utm_source=xxx&utm_medium=email -> https://github.com
- *
- * For more information, see:
- * https://developer.chrome.com/extensions/webRequest
- * https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/webRequest
  */
 
 export default {
