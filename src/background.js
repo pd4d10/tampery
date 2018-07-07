@@ -64,8 +64,8 @@ chrome.browserAction.onClicked.addListener(tab => {
 // Add listeners already stored at sync
 async function addListeners() {
   const data = await storage.get()
-  Object.entries(data).forEach(([id, { name, code }]) => {
-    handleAdd(id, code)
+  Object.entries(data).forEach(([id, { code, active }]) => {
+    if (active) handleAdd(id, code)
   })
 }
 addListeners()
@@ -88,6 +88,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           handleDelete(message.id)
           const data = await storage.get()
           delete data[message.id]
+          await storage.set(data)
+          break
+        }
+        case 'deactivate': {
+          handleDelete(message.id)
+          const data = await storage.get()
+          data[message.id].active = false
+          await storage.set(data)
+          break
+        }
+        case 'activate': {
+          const data = await storage.get()
+          handleAdd(message.id, data[message.id].code)
+          data[message.id].active = true
           await storage.set(data)
           break
         }

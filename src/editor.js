@@ -79,8 +79,11 @@ class App extends Component {
 
   handleToggleActive = async id => {
     if (this.state.data[id].active) {
-      this.sendMessage({ type: 'deactivate', id })
+      await this.sendMessage({ type: 'deactivate', id })
+    } else {
+      await this.sendMessage({ id, type: 'activate' })
     }
+    await this.updateDataFromStorage()
   }
 
   updateDataFromStorage = async () => {
