@@ -15,7 +15,7 @@ const LIFECYCLES = [
   'onErrorOccurred',
 ]
 
-async function handleAdd(id, code) {
+async function addListener(id, code) {
   const blob = new Blob([code], { type: 'text/javascript' })
   const url = URL.createObjectURL(blob)
 
@@ -48,7 +48,7 @@ async function handleAdd(id, code) {
   }
 }
 
-function handleDelete(id) {
+function removeListener(id) {
   if (!mapper[id]) return
   const { lifecycle, callback } = mapper[id]
   chrome.webRequest[lifecycle].removeListener(callback)
@@ -65,7 +65,7 @@ chrome.browserAction.onClicked.addListener(tab => {
 async function addListeners() {
   const data = await storage.get()
   Object.entries(data).forEach(([id, { code, active }]) => {
-    if (active) handleAdd(id, code)
+    if (active) addListener(id, code)
   })
 }
 addListeners()
@@ -75,37 +75,32 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('Message:', message)
   ;(async function handleMessage() {
     try {
-      switch (message.type) {
+      const { id, name, code, active, type } = message
+      const data = await storage.get()
+      switch (type) {
         case 'add': {
-          handleDelete(message.id)
-          await handleAdd(message.id, message.code)
-          const data = await storage.get()
-          data[message.id] = { code: message.code, active: message.active }
-          await storage.set(data)
+          removeListener(id)
+          await addListener(id, code)
+          data[id] = { name, code, active }
           break
         }
         case 'delete': {
-          handleDelete(message.id)
-          const data = await storage.get()
-          delete data[message.id]
-          await storage.set(data)
+          removeListener(id)
+          delete data[id]
           break
         }
         case 'deactivate': {
-          handleDelete(message.id)
-          const data = await storage.get()
-          data[message.id].active = false
-          await storage.set(data)
+          removeListener(id)
+          data[id].active = false
           break
         }
         case 'activate': {
-          const data = await storage.get()
-          handleAdd(message.id, data[message.id].code)
-          data[message.id].active = true
-          await storage.set(data)
+          await addListener(id, data[id].code)
+          data[id].active = true
           break
         }
       }
+      await storage.set(data)
       sendResponse({ message: '' })
     } catch (err) {
       console.error(err)
