@@ -58,7 +58,7 @@ function removeListener(id) {
 
 // Browser action click
 chrome.browserAction.onClicked.addListener(tab => {
-  window.open(chrome.runtime.getURL('dist/editor.html'))
+  window.open(chrome.runtime.getURL('dist/dashboard.html'))
 })
 
 // Add listeners already stored at sync

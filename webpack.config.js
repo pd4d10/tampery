@@ -11,7 +11,7 @@ module.exports = {
   entry: {
     background: './src/background',
     popup: './src/popup',
-    editor: './src/editor',
+    dashboard: './src/dashboard',
   },
   output: {
     path: path.resolve('chrome/dist'),
@@ -45,9 +45,9 @@ module.exports = {
       chunks: ['popup'],
     }),
     new HtmlWebpackPlugin({
-      title: 'Tamper Editor',
-      filename: 'editor.html',
-      chunks: ['editor'],
+      title: 'Dashboard',
+      filename: 'dashboard.html',
+      chunks: ['dashboard'],
     }),
   ],
 }

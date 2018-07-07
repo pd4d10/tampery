@@ -1,14 +1,8 @@
 import React, { Component, Fragment } from 'react'
-import { render } from 'react-dom'
 import { v4 } from 'uuid'
 import MonacoEditor from 'react-monaco-editor'
 import {
   Button,
-  Nav,
-  Navbar,
-  NavbarBrand,
-  NavItem,
-  NavLink,
   ListGroup,
   ListGroupItem,
   Modal,
@@ -23,37 +17,24 @@ import {
   Collapse,
 } from 'reactstrap'
 import Toggle from 'react-toggle'
-import { storage } from './utils'
-
-import 'react-toggle/style.css'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import './editor.css'
+import { storage } from '../utils'
 
 const examples = [
   {
     name: 'Blank',
-    code: require('raw-loader!./examples/blank'),
+    code: require('raw-loader!../examples/blank'),
   },
   {
     name: 'Change User-Agent(Change request headers)',
-    code: require('raw-loader!./examples/change-user-agent'),
+    code: require('raw-loader!../examples/change-user-agent'),
   },
   {
     name: 'Remove UTM tokens(Change URL and redirect)',
-    code: require('raw-loader!./examples/remove-utm-tokens'),
+    code: require('raw-loader!../examples/remove-utm-tokens'),
   },
 ]
-console.log(examples)
 
-// interface Payload {
-//   id: string
-//   name: string
-//   lifecycle: string
-//   code: string
-//   filter: string
-// }
-
-class App extends Component {
+export default class Home extends Component {
   state = {
     data: {},
     open: false,
@@ -225,19 +206,6 @@ class App extends Component {
           </ModalFooter>
         </Modal>
 
-        <Navbar dark color="dark" expand="md">
-          <NavbarBrand href="#">Dashboard</NavbarBrand>
-          <Collapse navbar>
-            <Nav className="mr-auto" navbar>
-              <NavItem>
-                <NavLink href="/components/">Home</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink href="/components/">About</NavLink>
-              </NavItem>
-            </Nav>
-          </Collapse>
-        </Navbar>
         <Container>
           {ids.length ? (
             <div style={{ marginTop: 20 }}>
@@ -292,7 +260,3 @@ class App extends Component {
     )
   }
 }
-
-const root = document.createElement('div')
-document.body.appendChild(root)
-render(<App />, root)
