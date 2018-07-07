@@ -27,13 +27,11 @@
     "webpack-merge": "^4.1.2"
   },
   "dependencies": {
-    "bootstrap": "^4.1.1",
+    "antd": "^3.6.5",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-monaco-editor": "^0.17.0",
     "react-router-dom": "^4.3.1",
-    "react-toggle": "^4.0.2",
-    "reactstrap": "^6.2.0",
     "uuid": "^3.2.1"
   }
 }
