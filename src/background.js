@@ -71,44 +71,44 @@ async function addListeners() {
 addListeners()
 
 // Add event listeners: add, delete, ...
+async function handleMessage(message, sendResponse) {
+  try {
+    const { id, name, code, active, type } = message
+    const data = await storage.get()
+    switch (type) {
+      case 'add': {
+        removeListener(id)
+        await addListener(id, code)
+        data[id] = { name, code, active }
+        break
+      }
+      case 'delete': {
+        removeListener(id)
+        delete data[id]
+        break
+      }
+      case 'deactivate': {
+        removeListener(id)
+        data[id].active = false
+        break
+      }
+      case 'activate': {
+        await addListener(id, data[id].code)
+        data[id].active = true
+        break
+      }
+    }
+    await storage.set(data)
+    sendResponse({ message: '' })
+  } catch (err) {
+    console.error(err)
+    sendResponse({
+      message: err.message,
+    })
+  }
+}
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('Message:', message)
-  ;(async function handleMessage() {
-    try {
-      const { id, name, code, active, type } = message
-      const data = await storage.get()
-      switch (type) {
-        case 'add': {
-          removeListener(id)
-          await addListener(id, code)
-          data[id] = { name, code, active }
-          break
-        }
-        case 'delete': {
-          removeListener(id)
-          delete data[id]
-          break
-        }
-        case 'deactivate': {
-          removeListener(id)
-          data[id].active = false
-          break
-        }
-        case 'activate': {
-          await addListener(id, data[id].code)
-          data[id].active = true
-          break
-        }
-      }
-      await storage.set(data)
-      sendResponse({ message: '' })
-    } catch (err) {
-      console.error(err)
-      sendResponse({
-        message: err.message,
-      })
-    }
-  })()
-
+  handleMessage(message, sendResponse)
   return true
 })

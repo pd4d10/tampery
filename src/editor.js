@@ -24,6 +24,10 @@ import './reset.css'
 
 const examples = [
   {
+    name: 'Blank',
+    code: require('raw-loader!./examples/blank'),
+  },
+  {
     name: 'Change User-Agent(Change request headers)',
     code: require('raw-loader!./examples/change-user-agent'),
   },
@@ -51,16 +55,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    storage.get().then(data => {
-      this.setState({ data })
-      const keys = Object.keys(data)
-      if (keys.length) {
-        this.setState({
-          selectedId: keys[0],
-          code: this.state.data[keys[0]].code,
-        })
-      }
-    })
+    this.updateDataFromStorage()
   }
 
   sendMessage = message => {
@@ -81,7 +76,7 @@ class App extends Component {
     if (this.state.data[id].active) {
       await this.sendMessage({ type: 'deactivate', id })
     } else {
-      await this.sendMessage({ id, type: 'activate' })
+      await this.sendMessage({ type: 'activate', id })
     }
     await this.updateDataFromStorage()
   }
@@ -89,15 +84,28 @@ class App extends Component {
   updateDataFromStorage = async () => {
     const data = await storage.get()
     this.setState({ data })
+    const ids = Object.keys(data)
+    if (ids.length) {
+      this.setState({
+        selectedId: ids[0],
+        code: this.state.data[ids[0]].code,
+      })
+    }
   }
 
   handleSave = async () => {
     await this.sendMessage({
       id: this.state.selectedId,
       type: 'add',
+      name: this.state.name,
       code: this.state.code,
       active: true,
     })
+    await this.updateDataFromStorage()
+  }
+
+  handleDelete = async () => {
+    await this.sendMessage({ type: 'delete', id: this.state.selectedId })
     await this.updateDataFromStorage()
   }
 
@@ -172,11 +180,7 @@ class App extends Component {
               language="javascript"
               // theme="vs-dark"
               value={state.code}
-              options={
-                {
-                  // selectOnLineNumbers: true,
-                }
-              }
+              options={{ contextmenu: false }}
               onChange={value => {
                 this.setState({ code: value })
               }}
@@ -189,10 +193,16 @@ class App extends Component {
             <Button
               variant="contained"
               color="primary"
-              // className={classes.button}
               onClick={this.handleSave}
             >
               Save
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={this.handleDelete}
+            >
+              Delete
             </Button>
           </div>
         </div>
