@@ -38,8 +38,13 @@ export default class Edit extends Component {
       }
       case '/edit/:id': {
         const { id } = this.props.match.params
-        const { name, code } = this.props.data[id]
-        this.setState({ id, name, code })
+        const item = this.props.data[id]
+
+        // Fix reload page, data doesn't be loaded into state at first time
+        if (item) {
+          const { name, code } = this.props.data[id]
+          this.setState({ id, name, code })
+        }
         break
       }
     }
