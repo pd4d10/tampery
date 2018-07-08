@@ -6,11 +6,12 @@ export const sendMessage = msg => {
     chrome.runtime.sendMessage(msg, response => {
       console.log('Response:', response)
       if (response.code) {
+        reject(response.message)
         message.error(response.message)
       } else {
+        resolve()
         message.success(response.message)
       }
-      resolve()
     })
   })
 }
