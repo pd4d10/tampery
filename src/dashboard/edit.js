@@ -1,11 +1,8 @@
 import React, { Component } from 'react'
-import { Input, Button, message } from 'antd'
+import { Input, Button, Form } from 'antd'
 import { v4 } from 'uuid'
-
 import MonacoEditor from 'react-monaco-editor'
-import { storage } from '../utils'
-import { sendMessage } from './utils'
-import { examples } from './constants'
+import { sendMessage, examples } from './utils'
 
 export default class Edit extends Component {
   state = {
@@ -14,7 +11,8 @@ export default class Edit extends Component {
     code: '',
   }
 
-  handleSave = async () => {
+  handleSave = async e => {
+    // e.preventDefault()
     await sendMessage({
       type: 'add',
       id: this.state.id,
@@ -23,6 +21,10 @@ export default class Edit extends Component {
       active: true,
     })
     await this.props.updateDataFromStorage()
+    this.props.history.push('/')
+  }
+
+  handleCancel = () => {
     this.props.history.push('/')
   }
 
@@ -44,32 +46,59 @@ export default class Edit extends Component {
   }
 
   render() {
-    console.log(this.props)
     const { state } = this
+    const formItemLayout = {
+      labelCol: {
+        sm: { span: 4 },
+      },
+      wrapperCol: {
+        sm: { span: 16 },
+      },
+    }
+    const tailFormItemLayout = {
+      wrapperCol: {
+        sm: {
+          span: 16,
+          offset: 4,
+        },
+      },
+    }
+
     return (
-      <div>
-        <Input
-          value={state.name}
-          onChange={e => {
-            this.setState({ name: e.target.value })
-          }}
-        />
-        <MonacoEditor
-          language="javascript"
-          // theme="vs-dark"
-          height={400}
-          // width={600}
-          value={state.code}
-          options={{ contextmenu: false }}
-          onChange={value => {
-            this.setState({ code: value })
-          }}
-          editorDidMount={(editor, monaco) => {
-            // editor.focus()
-          }}
-        />
-        <Button onClick={this.handleSave}>Save</Button>
-      </div>
+      <Form>
+        <Form.Item {...formItemLayout} label="Name">
+          <Input
+            value={state.name}
+            onChange={e => {
+              this.setState({ name: e.target.value })
+            }}
+          />
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="Code">
+          <div style={{ border: '1px solid #eee' }}>
+            <MonacoEditor
+              language="javascript"
+              // theme="vs-dark"
+              height={400}
+              // width={600}
+              value={state.code}
+              options={{ contextmenu: false }}
+              onChange={value => {
+                this.setState({ code: value })
+              }}
+              editorDidMount={(editor, monaco) => {
+                // editor.focus()
+              }}
+            />
+          </div>
+        </Form.Item>
+        <Form.Item {...tailFormItemLayout}>
+          <Button type="primary" onClick={this.handleSave}>
+            Save
+          </Button>{' '}
+          <Button onClick={this.handleCancel}>Cancel</Button>
+        </Form.Item>
+      </Form>
     )
   }
 }

@@ -1,8 +1,18 @@
-import React, { Component, Fragment } from 'react'
-import { Button, List, Switch, Dropdown, Menu, Modal } from 'antd'
-import { sendMessage } from './utils'
+import React, { Component } from 'react'
+import {
+  Button,
+  List,
+  Switch,
+  Dropdown,
+  Menu,
+  Modal,
+  Divider,
+  Table,
+} from 'antd'
+import { sendMessage, examples } from './utils'
 import { Link } from 'react-router-dom'
-import { examples } from './constants'
+
+// const AddScriptButton =
 
 export default class Home extends Component {
   handleToggleActive = async id => {
@@ -19,11 +29,6 @@ export default class Home extends Component {
     await this.props.updateDataFromStorage()
   }
 
-  handleAdd = async (e, index) => {
-    e.preventDefault()
-    this.props.history.push(`/add/${index}`)
-  }
-
   toggleConfirmDelete = id => {
     Modal.confirm({
       title: 'Do you want to delete this item?',
@@ -37,54 +42,57 @@ export default class Home extends Component {
   }
 
   render() {
-    const ids = Object.keys(this.props.data)
+    const dataSource = Object.entries(this.props.data).map(([id, value]) => ({
+      ...value,
+      id,
+      key: id,
+    }))
+    const columns = [
+      {
+        title: 'Name',
+      },
+      {
+        title: 'Active',
+        render: (text, record) => (
+          <Switch
+            checked={record.active}
+            onChange={() => this.handleToggleActive(record.id)}
+          />
+        ),
+      },
+      {
+        title: 'Actions',
+        render: (text, record) => (
+          <span>
+            <Link to={`/edit/${record.id}`}>Edit</Link>
+            <Divider type="vertical" />
+            <a
+              href="#"
+              onClick={e => {
+                e.preventDefault()
+                this.toggleConfirmDelete(record.id)
+              }}
+            >
+              Delete
+            </a>
+          </span>
+        ),
+      },
+    ].map(item => {
+      const key = item.title.toLowerCase()
+      return { ...item, key, dataIndex: key }
+    })
     return (
       <div>
         <div>
-          {ids.length ? (
+          {dataSource.length ? (
             <div style={{ marginTop: 20 }}>
-              <List
-                bordered
-                dataSource={ids}
-                renderItem={id => (
-                  <List.Item>
-                    {this.props.data[id].name}
-                    <Switch
-                      checked={this.props.data[id].active}
-                      onChange={() => this.handleToggleActive(id)}
-                    />
-                    <Link to={`/edit/${id}`}>Edit</Link>
-                    <Button onClick={() => this.toggleConfirmDelete(id)}>
-                      Delete
-                    </Button>
-                  </List.Item>
-                )}
-              />
+              <Table columns={columns} dataSource={dataSource} />
             </div>
           ) : (
             <div>
-              <p className="lead">Seems we don't have any scripts yet.</p>
-              <p className="lead">
-                Click add button at bottom right corner to add a new one :)
-              </p>
-              <p className="lead">
-                <Dropdown
-                  overlay={
-                    <Menu>
-                      {examples.map((example, index) => (
-                        <Menu.Item key={example.name}>
-                          <a href="#" onClick={e => this.handleAdd(e, index)}>
-                            {example.name}
-                          </a>
-                        </Menu.Item>
-                      ))}
-                    </Menu>
-                  }
-                  placement="bottomLeft"
-                >
-                  <Button>Add script</Button>
-                </Dropdown>
-              </p>
+              <p>Seems we don't have any scripts yet.</p>
+              <p>Click add button at top right corner to add a new one :)</p>
             </div>
           )}
         </div>
