@@ -73,22 +73,19 @@ addListeners()
 async function handleMessage(msg, sendResponse) {
   try {
     const { id, name, code, active, type } = msg
-    let responseMessage
     const data = await storage.get()
+    removeListener(id) // Always remove the old listener
     switch (type) {
       case 'add': {
-        removeListener(id)
         await addListener(id, name, code)
         data[id] = { name, code, active }
         break
       }
       case 'delete': {
-        removeListener(id)
         delete data[id]
         break
       }
       case 'deactivate': {
-        removeListener(id)
         data[id].active = false
         break
       }
