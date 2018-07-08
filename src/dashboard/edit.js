@@ -71,7 +71,7 @@ export default class Edit extends Component {
 
     return (
       <Form>
-        <Form.Item {...formItemLayout} label="Name">
+        <Form.Item {...formItemLayout} label="Name" required>
           <Input
             value={state.name}
             onChange={e => {

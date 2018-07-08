@@ -15,7 +15,11 @@ const LIFECYCLES = [
   'onErrorOccurred',
 ]
 
-async function addListener(id, code) {
+async function addListener(id, name, code) {
+  if (!name || typeof name !== 'string') {
+    throw new Error('Please specify a name')
+  }
+
   const blob = new Blob([code], { type: 'text/javascript' })
   const url = URL.createObjectURL(blob)
 
@@ -64,8 +68,8 @@ chrome.browserAction.onClicked.addListener(tab => {
 // Add listeners already stored at sync
 async function addListeners() {
   const data = await storage.get()
-  Object.entries(data).forEach(([id, { code, active }]) => {
-    if (active) addListener(id, code)
+  Object.entries(data).forEach(([id, { name, code, active }]) => {
+    if (active) addListener(id, name, code)
   })
 }
 addListeners()
@@ -79,7 +83,7 @@ async function handleMessage(msg, sendResponse) {
     switch (type) {
       case 'add': {
         removeListener(id)
-        await addListener(id, code)
+        await addListener(id, name, code)
         data[id] = { name, code, active }
         break
       }
@@ -94,7 +98,7 @@ async function handleMessage(msg, sendResponse) {
         break
       }
       case 'activate': {
-        await addListener(id, data[id].code)
+        await addListener(id, data[id].name, data[id].code)
         data[id].active = true
         break
       }
