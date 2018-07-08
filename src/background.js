@@ -60,11 +60,6 @@ function removeListener(id) {
   delete mapper[id]
 }
 
-// Browser action click
-chrome.browserAction.onClicked.addListener(tab => {
-  window.open(chrome.runtime.getURL('dist/dashboard.html'))
-})
-
 // Add listeners already stored at sync
 async function addListeners() {
   const data = await storage.get()

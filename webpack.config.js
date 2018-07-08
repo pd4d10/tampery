@@ -34,7 +34,7 @@ module.exports = {
     ],
   },
   node: {
-    fs: 'empty'
+    fs: 'empty',
   },
   plugins: [
     new CleanWebpackPlugin(['chrome/dist']),
