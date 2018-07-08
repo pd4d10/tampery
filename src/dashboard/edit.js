@@ -1,38 +1,46 @@
 import React, { Component } from 'react'
-import { Input } from 'antd'
+import { Input, Button, message } from 'antd'
+import { v4 } from 'uuid'
+
 import MonacoEditor from 'react-monaco-editor'
 import { storage } from '../utils'
 import { sendMessage } from './utils'
+import { examples } from './constants'
 
 export default class Edit extends Component {
   state = {
-    data: {},
+    id: null,
     name: '',
     code: '',
   }
 
   handleSave = async () => {
     await sendMessage({
-      id: this.props.match.params.id,
       type: 'add',
+      id: this.state.id,
       name: this.state.name,
       code: this.state.code,
       active: true,
     })
-  }
-
-  updateDataFromStorage = async () => {
-    const { id } = this.props.match.params
-    const data = await storage.get()
-    this.setState({
-      data,
-      name: data[id].name,
-      code: data[id].code,
-    })
+    await this.props.updateDataFromStorage()
+    this.props.history.push('/')
   }
 
   componentDidMount() {
-    this.updateDataFromStorage()
+    switch (this.props.match.path) {
+      case '/add/:index': {
+        const id = v4()
+        const { name, code } = examples[this.props.match.params.index]
+        this.setState({ id, name, code })
+        break
+      }
+      case '/edit/:id': {
+        const { id } = this.props.match.params
+        const { name, code } = this.props.data[id]
+        this.setState({ id, name, code })
+        break
+      }
+    }
   }
 
   render() {

@@ -1,87 +1,43 @@
 import React, { Component, Fragment } from 'react'
-import { v4 } from 'uuid'
-import { storage } from '../utils'
-import { Button, List, Switch } from 'antd'
+import { Button, List, Switch, Dropdown, Menu, Modal } from 'antd'
 import { sendMessage } from './utils'
 import { Link } from 'react-router-dom'
-
-const examples = [
-  {
-    name: 'Blank',
-    code: require('raw-loader!../examples/blank'),
-  },
-  {
-    name: 'Change User-Agent(Change request headers)',
-    code: require('raw-loader!../examples/change-user-agent'),
-  },
-  {
-    name: 'Remove UTM tokens(Change URL and redirect)',
-    code: require('raw-loader!../examples/remove-utm-tokens'),
-  },
-]
+import { examples } from './constants'
 
 export default class Home extends Component {
-  state = {
-    data: {},
-  }
-
-  componentDidMount() {
-    this.updateDataFromStorage()
-  }
-
   handleToggleActive = async id => {
-    if (this.state.data[id].active) {
+    if (this.props.data[id].active) {
       await sendMessage({ type: 'deactivate', id })
     } else {
       await sendMessage({ type: 'activate', id })
     }
-    await this.updateDataFromStorage()
+    await this.props.updateDataFromStorage()
   }
 
-  updateDataFromStorage = async () => {
-    const data = await storage.get()
-    this.setState({ data })
+  handleDelete = async id => {
+    await sendMessage({ type: 'delete', id })
+    await this.props.updateDataFromStorage()
   }
 
-  handleDelete = async () => {
-    this.toggleConfirmDelete()
-    await sendMessage({ type: 'delete', id: this.state.selectedId })
-    await this.updateDataFromStorage()
+  handleAdd = async (e, index) => {
+    e.preventDefault()
+    this.props.history.push(`/add/${index}`)
   }
 
-  handleAdd = code => {
-    const id = v4()
-    this.setState({
-      open: false,
-      selectedId: id,
-      data: {
-        ...this.state.data,
-        [id]: {
-          name: 'Untitled',
-          active: false,
-          code,
-        },
-      },
-      name: 'Untitled',
-      code,
-    })
-  }
-
-  toggleConfirmDelete = () => {
-    confirm({
+  toggleConfirmDelete = id => {
+    Modal.confirm({
       title: 'Do you want to delete this item?',
       content:
         'This operation will delete this item permanently. If you want to keep the code for future use, disable it instead.',
-      onOk() {
-        this.handleDelete()
+      onOk: () => {
+        this.handleDelete(id)
       },
       onCancel() {},
     })
   }
 
   render() {
-    const { state } = this
-    const ids = Object.keys(state.data)
+    const ids = Object.keys(this.props.data)
     return (
       <div>
         <div>
@@ -92,13 +48,15 @@ export default class Home extends Component {
                 dataSource={ids}
                 renderItem={id => (
                   <List.Item>
-                    {state.data[id].name}
+                    {this.props.data[id].name}
                     <Switch
-                      checked={state.data[id].active}
+                      checked={this.props.data[id].active}
                       onChange={() => this.handleToggleActive(id)}
                     />
-                    <Link to={`/edit/id=${id}`}>Edit</Link>
-                    <Button onClick={this.toggleConfirmDelete}>Delete</Button>
+                    <Link to={`/edit/${id}`}>Edit</Link>
+                    <Button onClick={() => this.toggleConfirmDelete(id)}>
+                      Delete
+                    </Button>
                   </List.Item>
                 )}
               />
@@ -110,7 +68,22 @@ export default class Home extends Component {
                 Click add button at bottom right corner to add a new one :)
               </p>
               <p className="lead">
-                <Button color="primary">Add script</Button>
+                <Dropdown
+                  overlay={
+                    <Menu>
+                      {examples.map((example, index) => (
+                        <Menu.Item key={example.name}>
+                          <a href="#" onClick={e => this.handleAdd(e, index)}>
+                            {example.name}
+                          </a>
+                        </Menu.Item>
+                      ))}
+                    </Menu>
+                  }
+                  placement="bottomLeft"
+                >
+                  <Button>Add script</Button>
+                </Dropdown>
               </p>
             </div>
           )}

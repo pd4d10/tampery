@@ -71,9 +71,10 @@ async function addListeners() {
 addListeners()
 
 // Add event listeners: add, delete, ...
-async function handleMessage(message, sendResponse) {
+async function handleMessage(msg, sendResponse) {
   try {
-    const { id, name, code, active, type } = message
+    const { id, name, code, active, type } = msg
+    let responseMessage
     const data = await storage.get()
     switch (type) {
       case 'add': {
@@ -99,10 +100,11 @@ async function handleMessage(message, sendResponse) {
       }
     }
     await storage.set(data)
-    sendResponse({ message: '' })
+    sendResponse({ code: 0, message: `${type} success` })
   } catch (err) {
     console.error(err)
     sendResponse({
+      code: 1,
       message: err.message,
     })
   }

@@ -1,15 +1,16 @@
+import { message } from 'antd'
 
-
-export const sendMessage = message => {
-  console.log('sendMessage:', message)
+export const sendMessage = msg => {
+  console.log('sendMessage:', msg)
   return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage(message, response => {
+    chrome.runtime.sendMessage(msg, response => {
       console.log('Response:', response)
-      if (response.message) {
-        alert(response.message)
+      if (response.code) {
+        message.error(response.message)
       } else {
-        resolve()
+        message.success(response.message)
       }
+      resolve()
     })
   })
 }
