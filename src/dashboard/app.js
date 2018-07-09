@@ -32,7 +32,7 @@ const AddScriptButton = withRouter(props => (
     }
     placement="bottomLeft"
   >
-    <Button>Add script</Button>
+    <Button type="primary">Add script</Button>
   </Dropdown>
 ))
 
@@ -65,23 +65,20 @@ export default class App extends Component {
       <Router>
         <Fragment>
           <Layout style={{ minHeight: '100%' }}>
-            <Header>
+            <div style={{ background: '#fff', padding: '0 50px' }}>
               <div className="logo" />
-              <Menu
-                theme="dark"
-                mode="horizontal"
-                defaultSelectedKeys={['/']}
-                style={{ lineHeight: '64px' }}
-              >
+              <Menu mode="horizontal" defaultSelectedKeys={['/']}>
                 <Menu.Item key="/">
                   <Link to="/">Home</Link>
                 </Menu.Item>
                 <Menu.Item key="/about">
                   <Link to="/about">About</Link>
                 </Menu.Item>
-                <AddScriptButton />
+                <Menu.Item key="/add" style={{ float: 'right' }}>
+                  <AddScriptButton />
+                </Menu.Item>
               </Menu>
-            </Header>
+            </div>
             <Content style={{ padding: '20px 50px 0' }}>
               <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
                 <Route

@@ -22,11 +22,11 @@ export const examples = [
     code: require('raw-loader!../examples/blank'),
   },
   {
-    name: 'Change User-Agent(Change request headers)',
+    name: 'Change User-Agent',
     code: require('raw-loader!../examples/change-user-agent'),
   },
   {
-    name: 'Remove UTM tokens(Change URL and redirect)',
-    code: require('raw-loader!../examples/remove-utm-tokens'),
+    name: 'Remove Google Analytics UTM tokens',
+    code: require('raw-loader!../examples/remove-google-analytics-utm-tokens'),
   },
 ]
