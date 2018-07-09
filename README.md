@@ -2,6 +2,8 @@
 
 Tampery is a browser extension to tamper browser requests in flight. It is **programmable**, which means you could write your own script to intercept, block, or modify browser requests. There is also a dashboard to manage all scripts.
 
+<img src="assets/dashboard.png" width="270"> <img src="assets/edit.png" width="270"> <img src="assets/popup.png" width="270">
+
 ## Installation
 
 Install it from [Chrome Web Store](https://chrome.google.com/webstore/detail/tampery/bipnikifgdamlhpdkkmoaiokbgfkeapl)
