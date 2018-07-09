@@ -1,5 +1,7 @@
 # Tampery
 
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/bipnikifgdamlhpdkkmoaiokbgfkeapl.svg)](https://chrome.google.com/webstore/detail/tampery/bipnikifgdamlhpdkkmoaiokbgfkeapl)
+
 Tampery is a browser extension to tamper browser requests in flight. It is **programmable**, which means you could write your own script to intercept, block, or modify browser requests. There is also a dashboard to manage all scripts.
 
 <img src="assets/dashboard.png" width="270"> <img src="assets/edit.png" width="270"> <img src="assets/popup.png" width="270">
@@ -9,6 +11,8 @@ Tampery is a browser extension to tamper browser requests in flight. It is **pro
 Install it from [Chrome Web Store](https://chrome.google.com/webstore/detail/tampery/bipnikifgdamlhpdkkmoaiokbgfkeapl)
 
 ## Examples
+
+There are some simple examples to show how it works:
 
 - [Change User-Agent](src/examples/change-user-agent.js)
 - [Remove Google Analytics UTM tokens](src/examples/remove-google-analytics-utm-tokens.js)
