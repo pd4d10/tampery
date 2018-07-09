@@ -40,12 +40,12 @@ module.exports = {
     new CleanWebpackPlugin(['chrome/dist']),
     new MonacoWebpackPlugin(),
     new HtmlWebpackPlugin({
-      title: 'Tamper Popup',
+      title: 'Tampery',
       filename: 'popup.html',
       chunks: ['popup'],
     }),
     new HtmlWebpackPlugin({
-      title: 'Dashboard',
+      title: 'Tampery Dashboard',
       filename: 'dashboard.html',
       chunks: ['dashboard'],
     }),

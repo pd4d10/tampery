@@ -1,8 +1,8 @@
 {
-  "name": "tamper",
+  "name": "tampery",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "git@github.com:pd4d10/tamper.git",
+  "repository": "git@github.com:pd4d10/tampery.git",
   "author": "Rongjian Zhang <pd4d10@gmail.com>",
   "license": "MIT",
   "scripts": {

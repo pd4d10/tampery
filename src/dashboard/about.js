@@ -2,9 +2,12 @@ import React from 'react'
 
 const About = () => (
   <div>
-    <a href="https://github.com/pd4d10" target="_blank">
-      https://github.com/pd4d10
-    </a>
+    <p>
+      Source code:{' '}
+      <a href="https://github.com/pd4d10/tampery" target="_blank">
+        https://github.com/pd4d10/tampery
+      </a>
+    </p>
   </div>
 )
 
