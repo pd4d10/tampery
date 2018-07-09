@@ -87,7 +87,7 @@ export default class Edit extends Component {
               height={400}
               // width={600}
               value={state.code}
-              options={{ contextmenu: false }}
+              options={{ contextmenu: false, scrollBeyondLastLine: false }}
               onChange={value => {
                 this.setState({ code: value })
               }}
