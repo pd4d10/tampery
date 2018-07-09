@@ -4,6 +4,9 @@
   "version": "0.0.1",
   "description": "Tamper browser requests in flight",
   "homepage_url": "https://github.com/pd4d10/tampery",
+  "icons": {
+    "128": "icon.png"
+  },
   "background": {
     "scripts": ["dist/background.js"]
   },
