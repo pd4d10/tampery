@@ -7,8 +7,10 @@ import About from './about'
 import Home from './home'
 import Edit from './edit'
 
-import 'antd/dist/antd.css'
+import style from 'antd/dist/antd.min.css'
 import { examples } from './utils'
+
+style // This is a hack for preventing Webpack drop CSS at production mode
 const { Header, Content, Footer } = Layout
 
 const AddScriptButton = withRouter(props => (

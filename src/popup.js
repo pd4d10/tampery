@@ -2,8 +2,10 @@ import React, { Component } from 'react'
 import { render } from 'react-dom'
 import { List, Switch } from 'antd'
 import { storage } from './utils'
-import 'antd/dist/antd.css'
+import style from 'antd/dist/antd.min.css'
 import { sendMessage } from './dashboard/utils'
+
+style // This is a hack for preventing Webpack drop CSS at production mode
 
 class App extends Component {
   state = {
