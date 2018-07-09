@@ -36,14 +36,14 @@ async function addListener(id, name, code) {
   if (!payload.filter) {
     throw new Error('Lack of filter')
   }
-  if (!payload.options) {
-    throw new Error('Lack of options')
+  if (!payload.extraInfoSpec) {
+    throw new Error('Lack of extraInfoSpec')
   }
 
   chrome.webRequest[payload.lifecycle].addListener(
     payload.callback,
     payload.filter,
-    payload.options,
+    payload.extraInfoSpec,
   )
   console.log('Listener added:', id)
   mapper[id] = {

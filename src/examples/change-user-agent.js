@@ -19,7 +19,7 @@ export default {
   filter: {
     urls: ['<all_urls>'],
   },
-  options: [
+  extraInfoSpec: [
     'requestHeaders',
     'blocking', // Add `blocking` here since we want to change request headers
   ],

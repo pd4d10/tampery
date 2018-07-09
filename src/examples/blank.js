@@ -4,7 +4,7 @@
  * chrome.webRequest[{{lifecycle}}].addListener(
  *   {{callback}},
  *   {{filter}},
- *   {{options}},
+ *   {{extraInfoSpec}},
  * )
  *
  * For more information, see:
@@ -21,7 +21,7 @@ export default {
     urls: ['<all_urls>'],
     // type: ['main_frame'],
   },
-  options: [
+  extraInfoSpec: [
     // 'blocking',
   ],
 }

@@ -32,7 +32,7 @@ export default {
       'main_frame',
     ],
   },
-  options: [
+  extraInfoSpec: [
     'blocking', // Add `blocking` here so we can do redirect
   ],
 }
