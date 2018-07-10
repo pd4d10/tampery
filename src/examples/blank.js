@@ -1,5 +1,5 @@
 /**
- * An exmaple script
+ * An exmaple script which does nothing
  *
  * chrome.webRequest[{{lifecycle}}].addListener(
  *   {{callback}},
@@ -7,7 +7,7 @@
  *   {{extraInfoSpec}},
  * )
  *
- * For more information, see:
+ * For more information, please see webRequest documentation:
  * https://developer.chrome.com/extensions/webRequest
  * https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/webRequest
  */

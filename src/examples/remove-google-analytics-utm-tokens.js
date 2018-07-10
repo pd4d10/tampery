@@ -1,5 +1,5 @@
 /**
- * Remove Google Analytics UTM tokens
+ * This script remove Google Analytics UTM tokens
  * https://github.com?utm_source=xxx&utm_medium=email -> https://github.com
  */
 

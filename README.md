@@ -2,9 +2,9 @@
 
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/bipnikifgdamlhpdkkmoaiokbgfkeapl.svg)](https://chrome.google.com/webstore/detail/tampery/bipnikifgdamlhpdkkmoaiokbgfkeapl)
 
-Tampery is a browser extension to tamper browser requests in flight. It is **programmable**, which means you could write your own script to intercept, block, or modify browser requests. There is also a dashboard to manage all scripts.
+Tampery is a browser extension to tamper browser requests in flight. It is **programmable**, which means you could write your own script to intercept, block, or modify browser requests.
 
-<img src="assets/dashboard.png" width="270"> <img src="assets/edit.png" width="270"> <img src="assets/popup.png" width="270">
+<img src="assets/dashboard.png" width="420"> <img src="assets/edit.png" width="420">
 
 ## Installation
 
@@ -22,7 +22,9 @@ There are some simple examples to show how it works:
 
 ## Usage
 
-Tampery use `chrome.webRequest` API under the hood. Basically, every script should export an object as `default`, which has `lifecycle`, `callback`, `filter` and `extraInfoSpec` as keys. For example, if we want to change User-Agent in request headers, we could create a script as follows:
+Tampery use `chrome.webRequest` API under the hood. Basically, every script should export an object as `default`, which has `lifecycle`, `callback`, `filter` and `extraInfoSpec` as keys.
+
+For example, if we want to change User-Agent in request headers, we could create a script as follows:
 
 ```js
 const myUserAgent =
@@ -49,6 +51,8 @@ export default {
   ],
 }
 ```
+
+Checkout [examples](#examples) to understand it quickly.
 
 For more information, see documentation of `webRequest` API of [Chrome](https://developer.chrome.com/extensions/webRequest) and [Firefox](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/webRequest)
 

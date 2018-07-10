@@ -1,5 +1,6 @@
 /**
- * Change all requests' User-Agent to iOS Safari
+ * This script changes all requests' User-Agent to iOS Safari
+ * Change myUserAgent below to apply another UA
  */
 
 const myUserAgent =
@@ -9,15 +10,16 @@ export default {
   lifecycle: 'onBeforeSendHeaders',
   callback: ({ requestHeaders }) => {
     for (var i = 0; i < requestHeaders.length; ++i) {
+      // Find the key named `User-Agent` and change its value
       if (requestHeaders[i].name.toLowerCase() === 'user-agent') {
         requestHeaders[i].value = myUserAgent
         break
       }
     }
-    return { requestHeaders }
+    return { requestHeaders } // Return to change headers
   },
   filter: {
-    urls: ['<all_urls>'],
+    urls: ['<all_urls>'], // Specify it takes effect on which URLs
   },
   extraInfoSpec: [
     'requestHeaders',
