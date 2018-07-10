@@ -18,6 +18,7 @@ There are some simple examples to show how it works:
 
 - [Change User-Agent](src/examples/change-user-agent.js)
 - [Remove Google Analytics UTM tokens](src/examples/remove-google-analytics-utm-tokens.js)
+- [Allow CORS](src/examples/allow-cors.js)
 
 ## Usage
 

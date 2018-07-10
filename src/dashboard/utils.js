@@ -29,4 +29,8 @@ export const examples = [
     name: 'Remove Google Analytics UTM tokens',
     code: require('raw-loader!../examples/remove-google-analytics-utm-tokens'),
   },
+  {
+    name: 'Allow CORS',
+    code: require('raw-loader!../examples/allow-cors'),
+  },
 ]
