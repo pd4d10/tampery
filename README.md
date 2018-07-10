@@ -10,6 +10,8 @@ Tampery is a browser extension to tamper browser requests in flight. It is **pro
 
 Install it from [Chrome Web Store](https://chrome.google.com/webstore/detail/tampery/bipnikifgdamlhpdkkmoaiokbgfkeapl)
 
+_Notice_: Currently we only support Chrome 63+, because [dynamic import](https://developers.google.com/web/updates/2017/11/dynamic-import) is used to import your script.
+
 ## Examples
 
 There are some simple examples to show how it works:
