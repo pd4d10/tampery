@@ -1,7 +1,6 @@
 {
   "name": "tampery",
-  "version": "0.0.3",
-  "main": "index.js",
+  "version": "0.0.4",
   "repository": "git@github.com:pd4d10/tampery.git",
   "author": "Rongjian Zhang <pd4d10@gmail.com>",
   "license": "MIT",
@@ -26,8 +25,7 @@
     "style-loader": "^0.21.0",
     "uglifyjs-webpack-plugin": "^1.2.7",
     "webpack": "^4.8.3",
-    "webpack-cli": "^2.1.3",
-    "webpack-merge": "^4.1.2"
+    "webpack-cli": "^2.1.3"
   },
   "dependencies": {
     "antd": "^3.6.5",
