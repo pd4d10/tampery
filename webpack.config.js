@@ -19,14 +19,13 @@ const config = {
     filename: '[name].js',
   },
   resolve: {
-    extensions: ['.js'],
+    extensions: ['.js', '.ts', '.tsx'],
   },
   module: {
     rules: [
       {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: /(node_modules|examples)/,
+        test: /\.tsx?$/,
+        loader: 'awesome-typescript-loader',
       },
       {
         test: /\.css$/,
