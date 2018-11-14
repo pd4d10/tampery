@@ -22,10 +22,11 @@ export const Home = () => {
           checked={record.active}
           onChange={async () => {
             if (data[record.id].active) {
-              await activate(record.id)
-            } else {
               await deactivate(record.id)
+            } else {
+              await activate(record.id)
             }
+            await loadFromStorage()
           }}
         />
       ),
@@ -45,8 +46,9 @@ export const Home = () => {
                 title: 'Do you want to delete this item?',
                 content:
                   'This operation will delete this item permanently. If you want to keep the code for future use, disable it instead.',
-                onOk: () => {
-                  remove(record.id)
+                onOk: async () => {
+                  await remove(record.id)
+                  await loadFromStorage()
                 },
                 onCancel() {},
               })
@@ -64,7 +66,7 @@ export const Home = () => {
 
   useEffect(() => {
     loadFromStorage()
-  })
+  }, [])
 
   return (
     <div>

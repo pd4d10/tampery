@@ -51,7 +51,7 @@ async function addListener(id: string, name: string, code: string) {
     payload.filter,
     payload.extraInfoSpec,
   )
-  console.log('Listener added:', id)
+  console.log('Listener added:', id, mapper)
   mapper[id] = {
     lifecycle: payload.lifecycle,
     callback: payload.callback,
@@ -62,7 +62,7 @@ function removeListener(id: string) {
   if (!mapper[id]) return
   const { lifecycle, callback } = mapper[id]
   chrome.webRequest[lifecycle].removeListener(callback)
-  console.log('Listener removed:', id)
+  console.log('Listener removed:', id, mapper)
   delete mapper[id]
 }
 

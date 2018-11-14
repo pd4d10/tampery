@@ -35,7 +35,7 @@ export const Edit = props => {
         break
       }
     }
-  })
+  }, [])
 
   const formItemLayout = {
     labelCol: {

@@ -20,12 +20,12 @@ export const useData = () => {
   }
 
   const deactivate = async (id: string) => {
-    sendMessage({ type: 'deactivate', id })
+    await sendMessage({ type: 'deactivate', id })
     await loadFromStorage()
   }
 
   const remove = async (id: string) => {
-    sendMessage({ type: 'delete', id })
+    await sendMessage({ type: 'delete', id })
     await loadFromStorage()
   }
 
@@ -35,7 +35,7 @@ export const useData = () => {
     code: string,
     active: boolean,
   ) => {
-    sendMessage({
+    await sendMessage({
       type: 'add',
       id,
       name,
