@@ -1,7 +1,13 @@
 import { storage } from './utils'
+import * as types from './types'
 
 // Save lifecycle and callback reference for removal
-const mapper = {}
+const mapper: {
+  [id: string]: {
+    lifecycle: string
+    callback: Function
+  }
+} = {}
 
 const LIFECYCLES = [
   'onBeforeRequest',
@@ -15,7 +21,7 @@ const LIFECYCLES = [
   'onErrorOccurred',
 ]
 
-async function addListener(id, name, code) {
+async function addListener(id: string, name: string, code: string) {
   if (!name || typeof name !== 'string') {
     throw new Error('Please specify a name')
   }
@@ -52,7 +58,7 @@ async function addListener(id, name, code) {
   }
 }
 
-function removeListener(id) {
+function removeListener(id: string) {
   if (!mapper[id]) return
   const { lifecycle, callback } = mapper[id]
   chrome.webRequest[lifecycle].removeListener(callback)
@@ -93,33 +99,37 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 })
 
 // Add event listeners: add, delete, ...
-async function handleMessage(msg, sendResponse) {
+async function handleMessage(
+  msg: types.Message,
+  sendResponse: (response: types.MessageRes) => void,
+) {
   try {
-    const { id, name, code, active, type } = msg
-    const data = await storage.get()
-    removeListener(id) // Always remove the old listener
-    switch (type) {
+    // const { id, name, code, active, type } = msg
+    const data: { [id: string]: any } = await storage.get()
+    removeListener(msg.id) // Always remove the old listener
+    switch (msg.type) {
       case 'add': {
-        await addListener(id, name, code)
-        data[id] = { name, code, active }
+        await addListener(msg.id, msg.name, msg.code)
+        const { name, code, active } = msg
+        data[msg.id] = { name, code, active }
         break
       }
       case 'delete': {
-        delete data[id]
+        delete data[msg.id]
         break
       }
       case 'deactivate': {
-        data[id].active = false
+        data[msg.id].active = false
         break
       }
       case 'activate': {
-        await addListener(id, data[id].name, data[id].code)
-        data[id].active = true
+        await addListener(msg.id, data[msg.id].name, data[msg.id].code)
+        data[msg.id].active = true
         break
       }
     }
     await storage.set(data)
-    sendResponse({ code: 0, message: `${type} success` })
+    sendResponse({ code: 0, message: `${msg.type} success` })
   } catch (err) {
     console.error(err)
     sendResponse({
@@ -128,8 +138,10 @@ async function handleMessage(msg, sendResponse) {
     })
   }
 }
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('Message:', message)
-  handleMessage(message, sendResponse)
-  return true
-})
+chrome.runtime.onMessage.addListener(
+  (msg: types.Message, sender, sendResponse) => {
+    console.log('Message:', msg)
+    handleMessage(msg, sendResponse)
+    return true
+  },
+)

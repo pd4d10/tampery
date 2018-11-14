@@ -1,6 +1,7 @@
 import { message } from 'antd'
+import * as types from '../types'
 
-export const sendMessage = msg => {
+export const sendMessage = (msg: types.Message) => {
   console.log('sendMessage:', msg)
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage(msg, response => {

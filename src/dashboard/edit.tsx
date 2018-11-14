@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Input, Button, Form } from 'antd'
 import { v4 } from 'uuid'
 import MonacoEditor from 'react-monaco-editor'
 import { sendMessage, examples } from './utils'
 
-export default class Edit extends Component {
+export default class Edit extends React.Component {
   state = {
     id: null,
     name: '',
