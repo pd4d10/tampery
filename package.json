@@ -29,8 +29,8 @@
     "@types/react-router-dom": "^4.3.1",
     "@types/uuid": "^3.4.4",
     "antd": "^3.6.5",
-    "react": "^16.3.2",
-    "react-dom": "^16.3.2",
+    "react": "^16.7.0-alpha.2",
+    "react-dom": "^16.7.0-alpha.2",
     "react-monaco-editor": "^0.21.0",
     "react-router-dom": "^4.3.1",
     "uuid": "^3.2.1"

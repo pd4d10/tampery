@@ -1,6 +1,6 @@
 import React from 'react'
 
-const About = () => (
+export const About = () => (
   <div>
     <p>Tampery is an open source project.</p>
     <p>
@@ -17,5 +17,3 @@ const About = () => (
     </p>
   </div>
 )
-
-export default About
