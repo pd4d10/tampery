@@ -1,9 +1,11 @@
 const path = require('path')
+const webpack = require('webpack')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 
-module.exports = {
+/** @type {webpack.Configuration} */
+const config = {
   mode: 'development',
   watch: true,
   devtool: 'source-map',
@@ -50,3 +52,5 @@ module.exports = {
     }),
   ],
 }
+
+module.exports = config
