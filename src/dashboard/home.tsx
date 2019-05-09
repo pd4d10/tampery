@@ -11,58 +11,6 @@ export const Home = () => {
     id,
     key: id,
   }))
-  const columns = [
-    {
-      title: 'Name',
-    },
-    {
-      title: 'Active',
-      render: (text, record) => (
-        <Switch
-          checked={record.active}
-          onChange={async () => {
-            if (data[record.id].active) {
-              await deactivate(record.id)
-            } else {
-              await activate(record.id)
-            }
-            await loadFromStorage()
-          }}
-        />
-      ),
-    },
-    {
-      title: 'Actions',
-      render: (text, record) => (
-        <span>
-          <Link to={`/edit/${record.id}`}>Edit</Link>
-          <Divider type="vertical" />
-          <a
-            href="#"
-            onClick={e => {
-              e.preventDefault()
-
-              Modal.confirm({
-                title: 'Do you want to delete this item?',
-                content:
-                  'This operation will delete this item permanently. If you want to keep the code for future use, disable it instead.',
-                onOk: async () => {
-                  await remove(record.id)
-                  await loadFromStorage()
-                },
-                onCancel() {},
-              })
-            }}
-          >
-            Delete
-          </a>
-        </span>
-      ),
-    },
-  ].map(item => {
-    const key = item.title.toLowerCase()
-    return { ...item, key, dataIndex: key }
-  })
 
   useEffect(() => {
     loadFromStorage()
@@ -73,7 +21,61 @@ export const Home = () => {
       <div>
         {dataSource.length ? (
           <div style={{ marginTop: 20 }}>
-            <Table columns={columns} dataSource={dataSource} />
+            <Table
+              columns={[
+                {
+                  title: 'Name',
+                },
+                {
+                  title: 'Active',
+                  render: (text, record) => (
+                    <Switch
+                      checked={record.active}
+                      onChange={async () => {
+                        if (data[record.id].active) {
+                          await deactivate(record.id)
+                        } else {
+                          await activate(record.id)
+                        }
+                        await loadFromStorage()
+                      }}
+                    />
+                  ),
+                },
+                {
+                  title: 'Actions',
+                  render: (text, record) => (
+                    <span>
+                      <Link to={`/edit/${record.id}`}>Edit</Link>
+                      <Divider type="vertical" />
+                      <a
+                        href="#"
+                        onClick={e => {
+                          e.preventDefault()
+
+                          Modal.confirm({
+                            title: 'Do you want to delete this item?',
+                            content:
+                              'This operation will delete this item permanently. If you want to keep the code for future use, disable it instead.',
+                            onOk: async () => {
+                              await remove(record.id)
+                              await loadFromStorage()
+                            },
+                            onCancel() {},
+                          })
+                        }}
+                      >
+                        Delete
+                      </a>
+                    </span>
+                  ),
+                },
+              ].map(item => {
+                const key = item.title.toLowerCase()
+                return { ...item, key, dataIndex: key }
+              })}
+              dataSource={dataSource}
+            />
           </div>
         ) : (
           <div>

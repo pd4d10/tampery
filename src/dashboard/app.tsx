@@ -37,7 +37,7 @@ const AddScriptButton = withRouter(props => (
   </Dropdown>
 ))
 
-export const App = () => {
+export const App: React.FC = () => {
   return (
     <HashRouter>
       <>

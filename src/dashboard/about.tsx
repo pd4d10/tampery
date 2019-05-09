@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const About = () => (
+export const About: React.FC = () => (
   <div>
     <p>Tampery is an open source project.</p>
     <p>
