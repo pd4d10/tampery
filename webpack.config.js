@@ -1,6 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin').default
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 
@@ -37,7 +37,9 @@ const config = {
     fs: 'empty',
   },
   plugins: [
-    new CleanWebpackPlugin(['chrome/dist']),
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: ['chrome/dist'],
+    }),
     new MonacoWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: 'Tampery',
