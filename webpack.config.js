@@ -26,6 +26,9 @@ const config = {
       {
         test: /\.tsx?$/,
         loader: 'awesome-typescript-loader',
+        options: {
+          errorsAsWarnings: true,
+        },
       },
       {
         test: /\.css$/,
