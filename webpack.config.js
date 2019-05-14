@@ -37,9 +37,7 @@ const config = {
     fs: 'empty',
   },
   plugins: [
-    new CleanWebpackPlugin({
-      cleanOnceBeforeBuildPatterns: ['chrome/dist'],
-    }),
+    new CleanWebpackPlugin(),
     new MonacoWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: 'Tampery',
