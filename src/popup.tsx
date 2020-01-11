@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
 import { render } from 'react-dom'
-import { List, Switch } from 'antd'
 import { storage } from './utils'
-import style from 'antd/dist/antd.min.css'
 import { sendMessage } from './dashboard/utils'
-
-style // This is a hack for preventing Webpack drop CSS at production mode
+import { AnchorButton, HTMLTable, Switch } from '@blueprintjs/core'
+import 'normalize.css/normalize.css'
+import '@blueprintjs/core/lib/css/blueprint.css'
 
 class App extends Component {
   state = {
@@ -30,28 +29,29 @@ class App extends Component {
     return (
       // If we set margin here the popup will be very long
       <div style={{ padding: 10, minWidth: 400 }}>
-        <List
-          // header={<div>Header</div>}
-          footer={
-            <a
-              href={chrome.runtime.getURL('dist/dashboard.html')}
-              target="_blank"
-            >
-              Open dashboard
-            </a>
-          }
-          bordered
-          dataSource={Object.keys(this.state.data)}
-          renderItem={id => (
-            <List.Item>
-              <div style={{ flexGrow: 1 }}>{this.state.data[id].name}</div>
-              <Switch
-                checked={this.state.data[id].active}
-                onChange={() => this.handleToggleActive(id)}
-              />
-            </List.Item>
-          )}
-        />
+        <HTMLTable bordered interactive>
+          <tbody>
+            {Object.entries(this.state.data).map(([id, v]) => {
+              return (
+                <tr key={id}>
+                  <td>{v.name}</td>
+                  <td>
+                    <Switch
+                      checked={v.active}
+                      onChange={() => this.handleToggleActive(id)}
+                    />
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </HTMLTable>
+        <AnchorButton
+          href={chrome.runtime.getURL('dist/dashboard.html')}
+          target="_blank"
+        >
+          Open dashboard
+        </AnchorButton>
       </div>
     )
   }

@@ -1,5 +1,5 @@
-import { message } from 'antd'
 import * as types from '../types'
+import { Toaster } from '@blueprintjs/core'
 
 export const sendMessage = (msg: types.Message) => {
   console.log('sendMessage:', msg)
@@ -7,11 +7,13 @@ export const sendMessage = (msg: types.Message) => {
     chrome.runtime.sendMessage(msg, response => {
       console.log('Response:', response)
       if (response.code) {
+        const t = Toaster.create()
+        t.show({ intent: 'warning', message: response.message })
         reject(response.message)
-        message.error(response.message)
       } else {
+        const t = Toaster.create()
+        t.show({ intent: 'success', message: response.message })
         resolve()
-        message.success(response.message)
       }
     })
   })

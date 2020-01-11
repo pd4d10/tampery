@@ -3,7 +3,11 @@ import { sendMessage } from './utils'
 import { storage } from '../utils'
 
 type Data = {
-  [id: string]: any
+  [id: string]: {
+    name: string
+    active: boolean
+    code: string
+  }
 }
 
 function noop() {}
