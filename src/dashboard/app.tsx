@@ -1,5 +1,5 @@
-import { HashRouter, Route, Link, withRouter } from 'react-router-dom'
-import React from 'react'
+import { HashRouter, Route, Link, useHistory } from 'react-router-dom'
+import React, { FC } from 'react'
 import { Layout, Menu, Dropdown, Button } from 'antd'
 
 import { About } from './about'
@@ -12,30 +12,33 @@ import { examples } from './utils'
 style // This is a hack for preventing Webpack drop CSS at production mode
 const { Content } = Layout
 
-const AddScriptButton = withRouter(props => (
-  <Dropdown
-    overlay={
-      <Menu>
-        {examples.map((example, index) => (
-          <Menu.Item key={example.name}>
-            <a
-              href="#"
-              onClick={async e => {
-                e.preventDefault()
-                props.history.push(`/add/${index}`)
-              }}
-            >
-              {example.name}
-            </a>
-          </Menu.Item>
-        ))}
-      </Menu>
-    }
-    placement="bottomLeft"
-  >
-    <Button type="primary">Add script</Button>
-  </Dropdown>
-))
+const AddScriptButton: FC = () => {
+  const history = useHistory()
+  return (
+    <Dropdown
+      overlay={
+        <Menu>
+          {examples.map((example, index) => (
+            <Menu.Item key={example.name}>
+              <a
+                href="#"
+                onClick={async e => {
+                  e.preventDefault()
+                  history.push(`/add/${index}`)
+                }}
+              >
+                {example.name}
+              </a>
+            </Menu.Item>
+          ))}
+        </Menu>
+      }
+      placement="bottomLeft"
+    >
+      <Button type="primary">Add script</Button>
+    </Dropdown>
+  )
+}
 
 export const App: React.FC = () => {
   return (

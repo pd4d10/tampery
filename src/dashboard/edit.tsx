@@ -1,33 +1,36 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, FC } from 'react'
 import { Input, Button, Form } from 'antd'
 import { v4 } from 'uuid'
 import MonacoEditor from 'react-monaco-editor'
 import { examples } from './utils'
 import { useData } from './hooks'
+import { useRouteMatch, useHistory } from 'react-router-dom'
 
-export const Edit = props => {
+export const Edit: FC = () => {
   const [id, setId] = useState('')
   const [name, setName] = useState('')
   const [code, setCode] = useState('')
-  const { add } = useData()
+  const { data, add } = useData()
+  const match = useRouteMatch<{ id: string; index: string }>()
+  const history = useHistory()
 
   useEffect(() => {
-    switch (props.match.path) {
-      case '/add/:index': {
+    switch (match.path) {
+      case '/add/:id': {
         const id = v4()
-        const { name, code } = examples[props.match.params.index]
+        const { name, code } = examples[parseInt(match.params.index)]
         setId(id)
         setName(name)
         setCode(code)
         break
       }
       case '/edit/:id': {
-        const { id } = props.match.params
-        const item = props.data[id]
+        const { id } = match.params
+        const item = data[id]
 
         // Fix reload page, data doesn't be loaded into state at first time
         if (item) {
-          const { name, code } = props.data[id]
+          const { name, code } = data[id]
           setId(id)
           setName(name)
           setCode(code)
@@ -88,14 +91,14 @@ export const Edit = props => {
           onClick={async e => {
             // e.preventDefault()
             await add(id, name, code, true)
-            props.history.push('/')
+            history.push('/')
           }}
         >
           Save
         </Button>{' '}
         <Button
           onClick={() => {
-            props.history.push('/')
+            history.push('/')
           }}
         >
           Cancel

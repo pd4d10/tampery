@@ -12,10 +12,6 @@ export const Home = () => {
     key: id,
   }))
 
-  useEffect(() => {
-    loadFromStorage()
-  }, [])
-
   return (
     <div>
       <div>

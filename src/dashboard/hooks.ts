@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { sendMessage } from './utils'
 import { storage } from '../utils'
 
@@ -13,6 +13,10 @@ export const useData = () => {
     const newData = await storage.get()
     setData(newData)
   }
+
+  useEffect(() => {
+    loadFromStorage()
+  }, [])
 
   const activate = async (id: string) => {
     await sendMessage({ type: 'activate', id })
