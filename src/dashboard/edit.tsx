@@ -1,16 +1,16 @@
-import React, { useState, useEffect, FC } from 'react'
+import React, { useState, useEffect, FC, useContext } from 'react'
 import { Input, Button, Form } from 'antd'
 import { v4 } from 'uuid'
 import MonacoEditor from 'react-monaco-editor'
 import { examples } from './utils'
-import { useData } from './hooks'
 import { useRouteMatch, useHistory } from 'react-router-dom'
+import { DataContext } from './context'
 
 export const Edit: FC = () => {
   const [id, setId] = useState('')
   const [name, setName] = useState('')
   const [code, setCode] = useState('')
-  const { data, add } = useData()
+  const { data, add } = useContext(DataContext)
   const match = useRouteMatch<{ id: string; index: string }>()
   const history = useHistory()
 

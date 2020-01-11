@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react'
+import React, { useContext } from 'react'
 import { Switch, Modal, Divider, Table } from 'antd'
 import { Link } from 'react-router-dom'
-import { useData } from './hooks'
+import { DataContext } from './context'
 
 export const Home = () => {
-  const { data, remove, activate, deactivate, loadFromStorage } = useData()
+  const { data, remove, activate, deactivate, loadFromStorage } = useContext(
+    DataContext,
+  )
 
   const dataSource = Object.entries(data).map(([id, value]) => ({
     ...value,

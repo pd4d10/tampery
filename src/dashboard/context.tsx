@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, createContext, FC } from 'react'
 import { sendMessage } from './utils'
 import { storage } from '../utils'
 
@@ -6,7 +6,23 @@ type Data = {
   [id: string]: any
 }
 
-export const useData = () => {
+function noop() {}
+
+export const DataContext = createContext({
+  data: {} as Data,
+  activate: noop as (id: string) => void,
+  deactivate: noop as (id: string) => void,
+  remove: noop as (id: string) => void,
+  add: noop as (
+    id: string,
+    name: string,
+    code: string,
+    active: boolean,
+  ) => void,
+  loadFromStorage: noop,
+})
+
+export const DataProvider: FC = ({ children }) => {
   const [data, setData] = useState<Data>({})
 
   const loadFromStorage = async () => {
@@ -49,5 +65,11 @@ export const useData = () => {
     await loadFromStorage()
   }
 
-  return { data, activate, deactivate, remove, add, loadFromStorage }
+  return (
+    <DataContext.Provider
+      value={{ data, activate, deactivate, remove, add, loadFromStorage }}
+    >
+      {children}
+    </DataContext.Provider>
+  )
 }
