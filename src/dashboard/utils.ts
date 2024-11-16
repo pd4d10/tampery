@@ -1,39 +1,35 @@
-import * as types from '../types'
-import { Toaster } from '@blueprintjs/core'
+/// <reference types="vite/client" />
+import * as types from "../types";
+import { Toaster } from "@blueprintjs/core";
+import exampleBlank from "../examples/blank?raw";
+import exampleChangeUserAgent from "../examples/change-user-agent?raw";
+import exampleRemoveGoogleAnalyticsUtmTokens from "../examples/remove-google-analytics-utm-tokens?raw";
+import exampleAllowCors from "../examples/allow-cors?raw";
 
 export const sendMessage = (msg: types.Message) => {
-  console.log('sendMessage:', msg)
+  console.log("sendMessage:", msg);
   return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage(msg, response => {
-      console.log('Response:', response)
+    chrome.runtime.sendMessage(msg, (response) => {
+      console.log("Response:", response);
       if (response.code) {
-        const t = Toaster.create()
-        t.show({ intent: 'warning', message: response.message })
-        reject(response.message)
+        const t = Toaster.create();
+        t.show({ intent: "warning", message: response.message });
+        reject(response.message);
       } else {
-        const t = Toaster.create()
-        t.show({ intent: 'success', message: response.message })
-        resolve()
+        const t = Toaster.create();
+        t.show({ intent: "success", message: response.message });
+        resolve();
       }
-    })
-  })
-}
+    });
+  });
+};
 
 export const examples = [
+  { name: "Blank", code: exampleBlank },
+  { name: "Change User-Agent", code: exampleChangeUserAgent },
   {
-    name: 'Blank',
-    code: require('raw-loader!../examples/blank'),
+    name: "Remove Google Analytics UTM tokens",
+    code: exampleRemoveGoogleAnalyticsUtmTokens,
   },
-  {
-    name: 'Change User-Agent',
-    code: require('raw-loader!../examples/change-user-agent'),
-  },
-  {
-    name: 'Remove Google Analytics UTM tokens',
-    code: require('raw-loader!../examples/remove-google-analytics-utm-tokens'),
-  },
-  {
-    name: 'Allow CORS',
-    code: require('raw-loader!../examples/allow-cors'),
-  },
-]
+  { name: "Allow CORS", code: exampleAllowCors },
+];
