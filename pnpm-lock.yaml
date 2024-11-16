@@ -32,6 +32,9 @@ importers:
       monaco-editor:
         specifier: ^0.19.2
         version: 0.19.3
+      normalize.css:
+        specifier: ^8.0.1
+        version: 8.0.1
       react:
         specifier: ^16.8.6
         version: 16.14.0

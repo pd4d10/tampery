@@ -31,7 +31,7 @@ async function addListener(id: string, name: string, code: string) {
 
   // Do not compile dynamic import here
   // https://github.com/webpack/webpack/pull/7034
-  const { default: payload } = await import(/* webpackIgnore: true */ url);
+  const { default: payload } = await import(/* @vite-ignore */ url);
 
   if (!LIFECYCLES.includes(payload.lifecycle)) {
     throw new Error("Invalid lifecycle");
