@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { storage } from "./utils";
 import { sendMessage } from "./dashboard/utils";
 import { AnchorButton, HTMLTable, Switch } from "@blueprintjs/core";
@@ -55,4 +55,4 @@ const App: FC = () => {
 
 const root = document.createElement("div");
 document.body.appendChild(root);
-render(<App />, root);
+createRoot(root).render(<App />);
