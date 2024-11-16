@@ -1,32 +1,37 @@
-import { HashRouter, Route, Link, Routes } from "react-router-dom";
+import { HashRouter, Route, Link, Routes, useNavigate } from "react-router-dom";
 import React, { FC } from "react";
-import {
-  Navbar,
-  NavbarGroup,
-  NavbarHeading,
-  NavbarDivider,
-  Button,
-} from "@blueprintjs/core";
-import { Select } from "@blueprintjs/select";
+import { Layout, Menu, Dropdown, Button } from "antd";
 import { About } from "./about";
 import { Home } from "./home";
 import { Edit } from "./edit";
 import { examples } from "./utils";
 import { DataProvider } from "./context";
 
-const ExampleSelect = Select.ofType<{ name: string; code: string }>();
-
 const AddScriptButton: FC = () => {
+  const navigate = useNavigate();
   return (
-    <ExampleSelect
-      items={examples}
-      itemRenderer={(item, i) => {
-        return <Link key={item.name} to={`/add/${i}`}></Link>;
-      }}
-      onItemSelect={(item) => {}}
+    <Dropdown
+      overlay={
+        <Menu>
+          {examples.map((example, index) => (
+            <Menu.Item key={example.name}>
+              <a
+                href="#"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  navigate(`/add/${index}`);
+                }}
+              >
+                {example.name}
+              </a>
+            </Menu.Item>
+          ))}
+        </Menu>
+      }
+      placement="bottomLeft"
     >
-      Add Script
-    </ExampleSelect>
+      <Button type="primary">Add script</Button>
+    </Dropdown>
   );
 };
 
@@ -35,25 +40,22 @@ export const App: React.FC = () => {
     <DataProvider>
       <HashRouter>
         <>
-          <div style={{ minHeight: "100%" }}>
+          <Layout style={{ minHeight: "100%" }}>
             <div style={{ background: "#fff", padding: "0 50px" }}>
-              <Navbar>
-                <NavbarGroup>
-                  <NavbarHeading>Tampery</NavbarHeading>
-                  <NavbarDivider />
-                  <Button icon="home" minimal>
-                    <Link to="/">Home</Link>
-                  </Button>
-                  <Button icon="document" minimal>
-                    <Link to="/about">About</Link>
-                  </Button>
-                </NavbarGroup>
-                <NavbarGroup align="right">
+              <div className="logo" />
+              <Menu mode="horizontal" defaultSelectedKeys={["/"]}>
+                <Menu.Item key="/">
+                  <Link to="/">Home</Link>
+                </Menu.Item>
+                <Menu.Item key="/about">
+                  <Link to="/about">About</Link>
+                </Menu.Item>
+                <Menu.Item key="/add" style={{ float: "right" }}>
                   <AddScriptButton />
-                </NavbarGroup>
-              </Navbar>
+                </Menu.Item>
+              </Menu>
             </div>
-            <div style={{ padding: "20px 50px 0" }}>
+            <Layout.Content style={{ padding: "20px 50px 0" }}>
               <div style={{ background: "#fff", padding: 24, minHeight: 280 }}>
                 <Routes>
                   <Route path="/" element={<Home />} />
@@ -62,8 +64,8 @@ export const App: React.FC = () => {
                   <Route path="/about" element={<About />} />
                 </Routes>
               </div>
-            </div>
-          </div>
+            </Layout.Content>
+          </Layout>
         </>
       </HashRouter>
     </DataProvider>

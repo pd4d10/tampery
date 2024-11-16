@@ -4,8 +4,8 @@ import MonacoEditor from "react-monaco-editor";
 import { examples } from "./utils";
 import { useMatch, useParams } from "react-router-dom";
 import { DataContext } from "./context";
-import { Button, FormGroup, InputGroup } from "@blueprintjs/core";
 import { useNavigate } from "react-router-dom";
+import { Button, Form, Input } from "antd";
 
 export const Edit: FC = () => {
   const [currentId, setCurrentId] = useState("");
@@ -58,53 +58,52 @@ export const Edit: FC = () => {
   };
 
   return (
-    <FormGroup
-      helperText="Helper text with details..."
-      label="Label A"
-      labelFor="text-input"
-      labelInfo="(required)"
-    >
-      <InputGroup id="text-input" placeholder="Placeholder text" />
-      <input
-        value={name}
-        onChange={(e) => {
-          setName(e.target.value);
-        }}
-      />
-      <div style={{ border: "1px solid #eee" }}>
-        <MonacoEditor
-          language="javascript"
-          // theme="vs-dark"
-          height={400}
-          // width={600}
-          value={code}
-          options={{ contextmenu: false, scrollBeyondLastLine: false }}
-          onChange={(value) => {
-            setCode(value);
-          }}
-          editorDidMount={(editor, monaco) => {
-            // editor.focus()
+    <Form>
+      <Form.Item {...formItemLayout} label="Name" required>
+        <Input
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
           }}
         />
-      </div>
-      <Button
-        intent="primary"
-        onClick={async () => {
-          // e.preventDefault()
-          await add(currentId, name, code, true);
-
-          navigate("/");
-        }}
-      >
-        Save
-      </Button>{" "}
-      <Button
-        onClick={() => {
-          navigate("/");
-        }}
-      >
-        Cancel
-      </Button>
-    </FormGroup>
+      </Form.Item>
+      <Form.Item {...formItemLayout} label="Code">
+        <div style={{ border: "1px solid #eee" }}>
+          <MonacoEditor
+            language="javascript"
+            // theme="vs-dark"
+            height={400}
+            // width={600}
+            value={code}
+            options={{ contextmenu: false, scrollBeyondLastLine: false }}
+            onChange={(value) => {
+              setCode(value);
+            }}
+            editorDidMount={(editor, monaco) => {
+              // editor.focus()
+            }}
+          />
+        </div>
+      </Form.Item>
+      <Form.Item {...tailFormItemLayout}>
+        <Button
+          type="primary"
+          onClick={async (e) => {
+            // e.preventDefault()
+            await add(currentId, name, code, true);
+            navigate("/");
+          }}
+        >
+          Save
+        </Button>{" "}
+        <Button
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          Cancel
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };

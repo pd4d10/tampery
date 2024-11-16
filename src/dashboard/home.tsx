@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { DataContext } from "./context";
-import { HTMLTable, Divider, Switch, Alert } from "@blueprintjs/core";
+import { Divider, Modal, Switch, Table } from "antd";
+import { ColumnsType } from "antd/es/table";
 
 export const Home = () => {
   const [open, setOpen] = useState(false);
@@ -14,66 +15,60 @@ export const Home = () => {
     key: id,
   }));
 
+  const records: ColumnsType = [
+    { title: "Name" },
+    {
+      title: "Active",
+      render: (text, record) => (
+        <Switch
+          checked={record.active}
+          onChange={async () => {
+            if (data[record.id].active) {
+              await deactivate(record.id);
+            } else {
+              await activate(record.id);
+            }
+            await loadFromStorage();
+          }}
+        />
+      ),
+    },
+    {
+      title: "Actions",
+      render: (text, record) => (
+        <span>
+          <Link to={`/edit/${record.id}`}>Edit</Link>
+          <Divider type="vertical" />
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+
+              Modal.confirm({
+                title: "Do you want to delete this item?",
+                content:
+                  "This operation will delete this item permanently. If you want to keep the code for future use, disable it instead.",
+                onOk: async () => {
+                  await remove(record.id);
+                  await loadFromStorage();
+                },
+                onCancel() {},
+              });
+            }}
+          >
+            Delete
+          </a>
+        </span>
+      ),
+    },
+  ];
+
   return (
     <div>
       <div>
         {dataSource.length ? (
           <div style={{ marginTop: 20 }}>
-            <HTMLTable interactive>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Active</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(data).map(([id, v]) => (
-                  <tr key={id}>
-                    <td>{v.name}</td>
-                    <td>
-                      <Switch
-                        checked={v.active}
-                        onChange={async () => {
-                          if (v.active) {
-                            await deactivate(id);
-                          } else {
-                            await activate(id);
-                          }
-                          await loadFromStorage();
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <span>
-                        <Link to={`/edit/${id}`}>Edit</Link>
-                        <Divider />
-                        <Alert
-                          isOpen={open}
-                          onConfirm={async () => {
-                            await remove(id);
-                            await loadFromStorage();
-                          }}
-                        >
-                          Do you want to delete this item? This operation will
-                          delete this item permanently. If you want to keep the
-                          code for future use, disable it instead.
-                        </Alert>
-                        <a
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setOpen(true);
-                          }}
-                        >
-                          Delete
-                        </a>
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </HTMLTable>
+            <Table columns={records} dataSource={dataSource} />
           </div>
         ) : (
           <div>

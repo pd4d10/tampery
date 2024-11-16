@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 import * as types from "../types";
-import { Toaster } from "@blueprintjs/core";
+import { message } from "antd";
 import exampleBlank from "../examples/blank?raw";
 import exampleChangeUserAgent from "../examples/change-user-agent?raw";
 import exampleRemoveGoogleAnalyticsUtmTokens from "../examples/remove-google-analytics-utm-tokens?raw";
@@ -12,12 +12,10 @@ export const sendMessage = (msg: types.Message) => {
     chrome.runtime.sendMessage(msg, (response) => {
       console.log("Response:", response);
       if (response.code) {
-        const t = Toaster.create();
-        t.show({ intent: "warning", message: response.message });
+        message.warning(response.message);
         reject(response.message);
       } else {
-        const t = Toaster.create();
-        t.show({ intent: "success", message: response.message });
+        message.success(response.message);
         resolve(null);
       }
     });

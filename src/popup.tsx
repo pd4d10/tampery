@@ -2,10 +2,8 @@ import { FC, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { storage } from "./utils";
 import { sendMessage } from "./dashboard/utils";
-import { AnchorButton, HTMLTable, Switch } from "@blueprintjs/core";
-import "normalize.css/normalize.css";
-import "@blueprintjs/core/lib/css/blueprint.css";
 import { Data } from "./dashboard/context";
+import { List, Switch } from "antd";
 
 const App: FC = () => {
   const [data, setData] = useState<Data>({});
@@ -26,29 +24,28 @@ const App: FC = () => {
   };
   return (
     <div style={{ padding: 10, minWidth: 400 }}>
-      <HTMLTable bordered interactive>
-        <tbody>
-          {Object.entries(data).map(([id, v]) => {
-            return (
-              <tr key={id}>
-                <td>{v.name}</td>
-                <td>
-                  <Switch
-                    checked={v.active}
-                    onChange={() => handleToggleActive(id)}
-                  />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </HTMLTable>
-      <AnchorButton
-        href={chrome.runtime.getURL("dist/dashboard.html")}
-        target="_blank"
-      >
-        Open dashboard
-      </AnchorButton>
+      <List
+        // header={<div>Header</div>}
+        footer={
+          <a
+            href={chrome.runtime.getURL("dist/dashboard.html")}
+            target="_blank"
+          >
+            Open dashboard
+          </a>
+        }
+        bordered
+        dataSource={Object.keys(data)}
+        renderItem={(id) => (
+          <List.Item>
+            <div style={{ flexGrow: 1 }}>{data[id].name}</div>
+            <Switch
+              checked={data[id].active}
+              onChange={() => handleToggleActive(id)}
+            />
+          </List.Item>
+        )}
+      />
     </div>
   );
 };
