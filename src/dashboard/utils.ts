@@ -18,7 +18,7 @@ export const sendMessage = (msg: types.Message) => {
       } else {
         const t = Toaster.create();
         t.show({ intent: "success", message: response.message });
-        resolve();
+        resolve(null);
       }
     });
   });

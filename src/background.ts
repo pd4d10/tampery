@@ -1,5 +1,6 @@
 import { storage } from "./utils";
 import * as types from "./types";
+import { Data } from "./dashboard/context";
 
 // Save lifecycle and callback reference for removal
 const mapper: {
@@ -31,7 +32,16 @@ async function addListener(id: string, name: string, code: string) {
 
   // Do not compile dynamic import here
   // https://github.com/webpack/webpack/pull/7034
-  const { default: payload } = await import(/* @vite-ignore */ url);
+  const {
+    default: payload,
+  }: {
+    default: {
+      lifecycle: string;
+      callback: Function;
+      filter?: chrome.webRequest.RequestFilter;
+      extraInfoSpec?: string[];
+    };
+  } = await import(/* @vite-ignore */ url);
 
   if (!LIFECYCLES.includes(payload.lifecycle)) {
     throw new Error("Invalid lifecycle");
@@ -46,6 +56,7 @@ async function addListener(id: string, name: string, code: string) {
     throw new Error("Lack of extraInfoSpec");
   }
 
+  // @ts-ignore TODO:
   chrome.webRequest[payload.lifecycle].addListener(
     payload.callback,
     payload.filter,
@@ -61,6 +72,8 @@ async function addListener(id: string, name: string, code: string) {
 function removeListener(id: string) {
   if (!mapper[id]) return;
   const { lifecycle, callback } = mapper[id];
+
+  // @ts-ignore TODO:
   chrome.webRequest[lifecycle].removeListener(callback);
   console.log("Listener removed:", id, mapper);
   delete mapper[id];
@@ -68,7 +81,7 @@ function removeListener(id: string) {
 
 // Add listeners already stored at sync
 async function addListeners() {
-  const data = await storage.get();
+  const data = await storage.get<Data>();
   Object.entries(data).forEach(([id, { name, code, active }]) => {
     if (active) addListener(id, name, code);
   });
@@ -86,7 +99,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
       }
     });
     // Apply new active state
-    Object.entries(changes.data.newValue).forEach(
+    Object.entries(changes.data.newValue as Data).forEach(
       ([id, { name, code, active }]) => {
         if (active && !mapper[id]) {
           addListener(id, name, code);
@@ -134,7 +147,7 @@ async function handleMessage(
     console.error(err);
     sendResponse({
       code: 1,
-      message: err.message,
+      message: (err as any).message,
     });
   }
 }

@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "tsc && vite build"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^1.0.14",

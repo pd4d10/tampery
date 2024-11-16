@@ -1,4 +1,4 @@
-import { HashRouter, Route, Link, useHistory } from "react-router-dom";
+import { HashRouter, Route, Link } from "react-router-dom";
 import React, { FC } from "react";
 import {
   Navbar,
@@ -17,7 +17,6 @@ import { DataProvider } from "./context";
 const ExampleSelect = Select.ofType<{ name: string; code: string }>();
 
 const AddScriptButton: FC = () => {
-  const history = useHistory();
   return (
     <ExampleSelect
       items={examples}
@@ -56,10 +55,10 @@ export const App: React.FC = () => {
             </div>
             <div style={{ padding: "20px 50px 0" }}>
               <div style={{ background: "#fff", padding: 24, minHeight: 280 }}>
-                <Route path="/" exact component={Home} />
-                <Route path="/edit/:id" component={Edit} />
-                <Route path="/add/:index" component={Edit} />
-                <Route path="/about" component={About} />
+                <Route path="/" element={<Home />} />
+                <Route path="/edit/:id" element={<Edit />} />
+                <Route path="/add/:index" element={<Edit />} />
+                <Route path="/about" element={<About />} />
               </div>
             </div>
           </div>

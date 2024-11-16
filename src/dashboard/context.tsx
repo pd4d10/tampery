@@ -1,14 +1,17 @@
-import React, { useState, useEffect, createContext, FC } from "react";
+import {
+  useState,
+  useEffect,
+  createContext,
+  FC,
+  PropsWithChildren,
+} from "react";
 import { sendMessage } from "./utils";
 import { storage } from "../utils";
 
-type Data = {
-  [id: string]: {
-    name: string;
-    active: boolean;
-    code: string;
-  };
-};
+export type Data = Record<
+  string,
+  { name: string; active: boolean; code: string }
+>;
 
 function noop() {}
 
@@ -26,11 +29,11 @@ export const DataContext = createContext({
   loadFromStorage: noop,
 });
 
-export const DataProvider: FC = ({ children }) => {
+export const DataProvider: FC<PropsWithChildren> = ({ children }) => {
   const [data, setData] = useState<Data>({});
 
   const loadFromStorage = async () => {
-    const newData = await storage.get();
+    const newData = await storage.get<Data>();
     setData(newData);
   };
 

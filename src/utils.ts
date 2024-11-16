@@ -1,5 +1,5 @@
 export const storage = {
-  get() {
+  get<T>(): Promise<T> {
     return new Promise((resolve, reject) => {
       chrome.storage.sync.get((items) => {
         resolve(items.data || {});
@@ -7,10 +7,10 @@ export const storage = {
       });
     });
   },
-  set(data) {
+  set<T>(data: T) {
     return new Promise((resolve, reject) => {
       chrome.storage.sync.set({ data }, () => {
-        resolve();
+        resolve(null);
         console.log("Storage set:", data);
       });
     });

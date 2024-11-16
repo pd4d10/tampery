@@ -1,41 +1,41 @@
-import React, { useState, useEffect, FC, useContext } from "react";
+import { useState, useEffect, FC, useContext } from "react";
 import { v4 } from "uuid";
 import MonacoEditor from "react-monaco-editor";
 import { examples } from "./utils";
-import { useRouteMatch, useHistory } from "react-router-dom";
+import { useMatch, useParams } from "react-router-dom";
 import { DataContext } from "./context";
 import { Button, FormGroup, InputGroup } from "@blueprintjs/core";
+import { useNavigate } from "react-router-dom";
 
 export const Edit: FC = () => {
-  const [id, setId] = useState("");
+  const [currentId, setCurrentId] = useState("");
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const { data, add } = useContext(DataContext);
-  const match = useRouteMatch<{ id: string; index: string }>();
-  const history = useHistory();
+
+  const navigate = useNavigate();
+  const params = useParams<{ id: string; index: string }>();
+  const isAdd = useMatch("/add/:id");
+  const isEdit = useMatch("/edit/:id");
 
   useEffect(() => {
-    switch (match.path) {
-      case "/add/:id": {
-        const id = v4();
-        const { name, code } = examples[parseInt(match.params.index)];
-        setId(id);
+    if (isAdd) {
+      const id = v4();
+      const index = params.index!;
+      const { name, code } = examples[parseInt(index)];
+      setCurrentId(id);
+      setName(name);
+      setCode(code);
+    } else if (isEdit) {
+      const id = params.id!;
+      const item = data[id];
+
+      // Fix reload page, data doesn't be loaded into state at first time
+      if (item) {
+        const { name, code } = data[id];
+        setCurrentId(id);
         setName(name);
         setCode(code);
-        break;
-      }
-      case "/edit/:id": {
-        const { id } = match.params;
-        const item = data[id];
-
-        // Fix reload page, data doesn't be loaded into state at first time
-        if (item) {
-          const { name, code } = data[id];
-          setId(id);
-          setName(name);
-          setCode(code);
-        }
-        break;
       }
     }
   }, []);
@@ -91,15 +91,16 @@ export const Edit: FC = () => {
         intent="primary"
         onClick={async () => {
           // e.preventDefault()
-          await add(id, name, code, true);
-          history.push("/");
+          await add(currentId, name, code, true);
+
+          navigate("/");
         }}
       >
         Save
       </Button>{" "}
       <Button
         onClick={() => {
-          history.push("/");
+          navigate("/");
         }}
       >
         Cancel
