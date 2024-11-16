@@ -1,4 +1,4 @@
-import { HashRouter, Route, Link } from "react-router-dom";
+import { HashRouter, Route, Link, Routes } from "react-router-dom";
 import React, { FC } from "react";
 import {
   Navbar,
@@ -55,10 +55,12 @@ export const App: React.FC = () => {
             </div>
             <div style={{ padding: "20px 50px 0" }}>
               <div style={{ background: "#fff", padding: 24, minHeight: 280 }}>
-                <Route path="/" element={<Home />} />
-                <Route path="/edit/:id" element={<Edit />} />
-                <Route path="/add/:index" element={<Edit />} />
-                <Route path="/about" element={<About />} />
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/edit/:id" element={<Edit />} />
+                  <Route path="/add/:index" element={<Edit />} />
+                  <Route path="/about" element={<About />} />
+                </Routes>
               </div>
             </div>
           </div>

@@ -3,6 +3,13 @@ import { crx } from "@crxjs/vite-plugin";
 import pkg from "./package.json";
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      input: {
+        welcome: "dashboard.html",
+      },
+    },
+  },
   plugins: [
     crx({
       manifest: {
