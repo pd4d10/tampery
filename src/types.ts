@@ -1,33 +1,33 @@
 interface MessageBase {
-  id: string
+  id: string;
 }
 
 interface MessageAdd extends MessageBase {
-  type: 'add'
-  name: string
-  code: string
-  active: boolean
+  type: "add";
+  name: string;
+  code: string;
+  active: boolean;
 }
 
 interface MessageDelete extends MessageBase {
-  type: 'delete'
+  type: "delete";
 }
 
 interface MessageActivate extends MessageBase {
-  type: 'activate'
+  type: "activate";
 }
 
 interface MessageDeactivate extends MessageBase {
-  type: 'deactivate'
+  type: "deactivate";
 }
 
 export type Message =
   | MessageAdd
   | MessageDelete
   | MessageActivate
-  | MessageDeactivate
+  | MessageDeactivate;
 
 export type MessageRes = {
-  code: number
-  message: string
-}
+  code: number;
+  message: string;
+};

@@ -6,30 +6,30 @@
  */
 
 export default {
-  lifecycle: 'onHeadersReceived',
+  lifecycle: "onHeadersReceived",
   callback: ({ responseHeaders }) => {
-    let hasHeader = false
+    let hasHeader = false;
     for (let i = 0; i < responseHeaders.length; i++) {
       if (
-        responseHeaders[i].name.toLowerCase() === 'access-control-allow-origin'
+        responseHeaders[i].name.toLowerCase() === "access-control-allow-origin"
       ) {
-        responseHeaders[i].value = '*'
-        hasHeader = true
+        responseHeaders[i].value = "*";
+        hasHeader = true;
       }
     }
     if (!hasHeader) {
       responseHeaders.push({
-        name: 'Access-Control-Allow-Origin',
-        value: '*',
-      })
+        name: "Access-Control-Allow-Origin",
+        value: "*",
+      });
     }
-    return { responseHeaders } // Return to change headers
+    return { responseHeaders }; // Return to change headers
   },
   filter: {
-    urls: ['<all_urls>'], // Please change here, only include the sites you want
+    urls: ["<all_urls>"], // Please change here, only include the sites you want
   },
   extraInfoSpec: [
-    'responseHeaders', // Add `responseHeaders` to access response headers
-    'blocking', // Add `blocking` here since we want to change response headers
+    "responseHeaders", // Add `responseHeaders` to access response headers
+    "blocking", // Add `blocking` here since we want to change response headers
   ],
-}
+};

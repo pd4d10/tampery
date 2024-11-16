@@ -4,35 +4,35 @@
  */
 
 export default {
-  lifecycle: 'onBeforeRequest',
-  callback: details => {
-    const url = new URL(details.url)
-    const keys = url.searchParams.keys()
-    const keysToBeDeleted = []
+  lifecycle: "onBeforeRequest",
+  callback: (details) => {
+    const url = new URL(details.url);
+    const keys = url.searchParams.keys();
+    const keysToBeDeleted = [];
     for (const key of keys) {
-      if (key.startsWith('utm_')) {
-        keysToBeDeleted.push(key)
+      if (key.startsWith("utm_")) {
+        keysToBeDeleted.push(key);
       }
     }
-    keysToBeDeleted.forEach(key => {
-      url.searchParams.delete(key)
-    })
+    keysToBeDeleted.forEach((key) => {
+      url.searchParams.delete(key);
+    });
 
     // Only redirect if the new URL is different with the old
-    const newUrl = url.toString()
+    const newUrl = url.toString();
     if (newUrl != details.url) {
-      return { redirectUrl: newUrl }
+      return { redirectUrl: newUrl };
     }
   },
   filter: {
-    urls: ['<all_urls>'],
+    urls: ["<all_urls>"],
     types: [
       // Only do removal at main frame,
       // because we don't care URL of XHR, images or any other resources
-      'main_frame',
+      "main_frame",
     ],
   },
   extraInfoSpec: [
-    'blocking', // Add `blocking` here so we can do redirect
+    "blocking", // Add `blocking` here so we can do redirect
   ],
-}
+};

@@ -13,15 +13,15 @@
  */
 
 export default {
-  lifecycle: 'onBeforeSendHeaders',
+  lifecycle: "onBeforeSendHeaders",
   callback: () => {
     // Do something here
   },
   filter: {
-    urls: ['<all_urls>'],
+    urls: ["<all_urls>"],
     // type: ['main_frame'],
   },
   extraInfoSpec: [
     // 'blocking',
   ],
-}
+};

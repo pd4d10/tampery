@@ -1,30 +1,30 @@
-import React, { Component } from 'react'
-import { render } from 'react-dom'
-import { storage } from './utils'
-import { sendMessage } from './dashboard/utils'
-import { AnchorButton, HTMLTable, Switch } from '@blueprintjs/core'
-import 'normalize.css/normalize.css'
-import '@blueprintjs/core/lib/css/blueprint.css'
+import React, { Component } from "react";
+import { render } from "react-dom";
+import { storage } from "./utils";
+import { sendMessage } from "./dashboard/utils";
+import { AnchorButton, HTMLTable, Switch } from "@blueprintjs/core";
+import "normalize.css/normalize.css";
+import "@blueprintjs/core/lib/css/blueprint.css";
 
 class App extends Component {
   state = {
     data: {},
-  }
+  };
   componentDidMount() {
-    this.updateDataFromStorage()
+    this.updateDataFromStorage();
   }
   updateDataFromStorage = async () => {
-    const data = await storage.get()
-    this.setState({ data })
-  }
-  handleToggleActive = async id => {
+    const data = await storage.get();
+    this.setState({ data });
+  };
+  handleToggleActive = async (id) => {
     if (this.state.data[id].active) {
-      await sendMessage({ type: 'deactivate', id })
+      await sendMessage({ type: "deactivate", id });
     } else {
-      await sendMessage({ type: 'activate', id })
+      await sendMessage({ type: "activate", id });
     }
-    await this.updateDataFromStorage()
-  }
+    await this.updateDataFromStorage();
+  };
   render() {
     return (
       // If we set margin here the popup will be very long
@@ -42,21 +42,21 @@ class App extends Component {
                     />
                   </td>
                 </tr>
-              )
+              );
             })}
           </tbody>
         </HTMLTable>
         <AnchorButton
-          href={chrome.runtime.getURL('dist/dashboard.html')}
+          href={chrome.runtime.getURL("dist/dashboard.html")}
           target="_blank"
         >
           Open dashboard
         </AnchorButton>
       </div>
-    )
+    );
   }
 }
 
-const root = document.createElement('div')
-document.body.appendChild(root)
-render(<App />, root)
+const root = document.createElement("div");
+document.body.appendChild(root);
+render(<App />, root);

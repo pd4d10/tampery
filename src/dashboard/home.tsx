@@ -1,19 +1,18 @@
-import React, { useContext, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { DataContext } from './context'
-import { HTMLTable, Divider, Switch, Alert } from '@blueprintjs/core'
+import React, { useContext, useState } from "react";
+import { Link } from "react-router-dom";
+import { DataContext } from "./context";
+import { HTMLTable, Divider, Switch, Alert } from "@blueprintjs/core";
 
 export const Home = () => {
-  const [open, setOpen] = useState(false)
-  const { data, remove, activate, deactivate, loadFromStorage } = useContext(
-    DataContext,
-  )
+  const [open, setOpen] = useState(false);
+  const { data, remove, activate, deactivate, loadFromStorage } =
+    useContext(DataContext);
 
   const dataSource = Object.entries(data).map(([id, value]) => ({
     ...value,
     id,
     key: id,
-  }))
+  }));
 
   return (
     <div>
@@ -37,11 +36,11 @@ export const Home = () => {
                         checked={v.active}
                         onChange={async () => {
                           if (v.active) {
-                            await deactivate(id)
+                            await deactivate(id);
                           } else {
-                            await activate(id)
+                            await activate(id);
                           }
-                          await loadFromStorage()
+                          await loadFromStorage();
                         }}
                       />
                     </td>
@@ -52,8 +51,8 @@ export const Home = () => {
                         <Alert
                           isOpen={open}
                           onConfirm={async () => {
-                            await remove(id)
-                            await loadFromStorage()
+                            await remove(id);
+                            await loadFromStorage();
                           }}
                         >
                           Do you want to delete this item? This operation will
@@ -62,9 +61,9 @@ export const Home = () => {
                         </Alert>
                         <a
                           href="#"
-                          onClick={e => {
-                            e.preventDefault()
-                            setOpen(true)
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setOpen(true);
                           }}
                         >
                           Delete
@@ -84,5 +83,5 @@ export const Home = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
