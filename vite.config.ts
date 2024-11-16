@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import { crx } from "@crxjs/vite-plugin";
+import pkg from "./package.json";
 
 export default defineConfig({
   plugins: [
@@ -7,7 +8,7 @@ export default defineConfig({
       manifest: {
         manifest_version: 3,
         name: "Tampery",
-        version: "0.0.4",
+        version: pkg.version,
         description: "Tamper browser requests in flight",
         homepage_url: "https://github.com/pd4d10/tampery",
         icons: {
