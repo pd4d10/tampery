@@ -2,8 +2,6 @@
 // import * as types from "./types";
 // import { Data, RuleWithoutId } from "./dashboard/context";
 
-import { RuleWithoutId } from "./utils";
-
 // // Save lifecycle and callback reference for removal
 // const mapper: {
 //   [id: string]: {
@@ -11,20 +9,6 @@ import { RuleWithoutId } from "./utils";
 //     callback: Function;
 //   };
 // } = {};
-
-async function addListener(ruleWithoutId: RuleWithoutId) {
-  const currentRules = await chrome.declarativeNetRequest.getDynamicRules();
-  const id = Math.max(...currentRules.map((rule) => rule.id)) + 1;
-
-  const rule = { ...ruleWithoutId, id };
-  chrome.declarativeNetRequest.updateDynamicRules({ addRules: [rule] }, () => {
-    if (chrome.runtime.lastError) {
-      console.error(chrome.runtime.lastError.message);
-    } else {
-      console.log("Rule added successfully.");
-    }
-  });
-}
 
 // function removeListener(id: string) {
 //   if (!mapper[id]) return;

@@ -1,6 +1,6 @@
-export type RuleWithoutId = Omit<chrome.declarativeNetRequest.Rule, "id">;
+import { parse } from "jsonc-parser";
 
-export type Item = { title: string; rule: RuleWithoutId };
+export type Item = { title: string; rule: string };
 
 export type ById = Record<number, Item>;
 
@@ -37,4 +37,9 @@ export const findNewRuleId = async () => {
   const currentRules = await chrome.declarativeNetRequest.getDynamicRules();
   const ruleId = Math.max(...currentRules.map((rule) => rule.id)) + 1;
   return ruleId;
+};
+
+export const parseRule = (rule: string) => {
+  // TODO: runtime type checking
+  return parse(rule) as Omit<chrome.declarativeNetRequest.Rule, "id">;
 };

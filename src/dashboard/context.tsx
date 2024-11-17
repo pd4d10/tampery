@@ -6,7 +6,7 @@ import {
   useReducer,
   Reducer,
 } from "react";
-import { Item, byIdKey, ById } from "../utils";
+import { Item, byIdKey, ById, parseRule } from "../utils";
 import { match } from "ts-pattern";
 
 type State = {
@@ -78,7 +78,8 @@ export const DataProvider: FC<PropsWithChildren> = ({ children }) => {
     chrome.declarativeNetRequest.updateDynamicRules({
       removeRuleIds: Object.keys(state.byId).map(Number),
       addRules: Object.entries(state.byId).map(([key, item]) => {
-        return { ...item.rule, id: parseInt(key) };
+        const rule = parseRule(item.rule);
+        return { ...rule, id: parseInt(key) };
       }),
     });
 

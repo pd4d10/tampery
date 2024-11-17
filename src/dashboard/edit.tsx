@@ -31,7 +31,7 @@ export const Edit: FC = () => {
       const item = state.byId[currentId];
       if (item) {
         setTitle(item.title);
-        setCode(JSON.stringify(item.rule, null, 2));
+        setCode(item.rule);
       }
     }
   }, []);
@@ -66,7 +66,7 @@ export const Edit: FC = () => {
       <Form.Item {...formItemLayout} label="Rule">
         <div style={{ border: "1px solid #eee" }}>
           <MonacoEditor
-            language="javascript"
+            language="jsonc"
             // theme="vs-dark"
             height={400}
             // width={600}
@@ -90,7 +90,7 @@ export const Edit: FC = () => {
               const id = await findNewRuleId();
               dispatch({
                 type: "add",
-                payload: [id, { title, rule: JSON.parse(code) }],
+                payload: [id, { title, rule: code }],
               });
             } else if (isEdit) {
               //
