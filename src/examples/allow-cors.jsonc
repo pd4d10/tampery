@@ -1,0 +1,18 @@
+/**
+ * Allow CORS for every site by adding `Access-Control-Allow-Origin: *` to response headers
+ * This script may break some sites, because when it is set to `*`,
+ * it does not allow requests to supply credentials like cookies
+ * Please change filter.urls before use
+ */
+{
+  "action": {
+    "type": "modifyHeaders",
+    "responseHeaders": [
+      {
+        "header": "Access-Control-Allow-Origin",
+        "operation": "set",
+        "value": "*"
+      }
+    ]
+  }
+}
