@@ -1,17 +1,16 @@
 import { useState, useEffect, FC, useContext } from "react";
-import { v4 } from "uuid";
 import MonacoEditor from "react-monaco-editor";
 import { examples } from "./utils";
 import { useMatch, useParams } from "react-router-dom";
 import { DataContext } from "./context";
 import { useNavigate } from "react-router-dom";
 import { Button, Form, Input } from "antd";
+import { findNewRuleId } from "../utils";
 
 export const Edit: FC = () => {
-  const [currentId, setCurrentId] = useState("");
-  const [name, setName] = useState("");
+  const [title, setTitle] = useState("");
   const [code, setCode] = useState("");
-  const { data, add } = useContext(DataContext);
+  const { state, dispatch } = useContext(DataContext);
 
   const navigate = useNavigate();
   const params = useParams<{ id: string; index: string }>();
@@ -19,23 +18,20 @@ export const Edit: FC = () => {
   const isEdit = useMatch("/edit/:id");
 
   useEffect(() => {
-    if (isAdd) {
-      const id = v4();
-      const index = params.index!;
-      const { name, code } = examples[parseInt(index)];
-      setCurrentId(id);
-      setName(name);
-      setCode(code);
-    } else if (isEdit) {
-      const id = params.id!;
-      const item = data[id];
+    if (!params.id) throw new Error("no id");
+    const currentId = parseInt(params.id);
 
-      // Fix reload page, data doesn't be loaded into state at first time
+    if (isAdd) {
+      const example = examples[currentId];
+      if (example) {
+        setTitle(example.title);
+        setCode(example.code);
+      }
+    } else if (isEdit) {
+      const item = state.byId[currentId];
       if (item) {
-        const { name, code } = data[id];
-        setCurrentId(id);
-        setName(name);
-        setCode(code);
+        setTitle(item.title);
+        setCode(JSON.stringify(item.rule, null, 2));
       }
     }
   }, []);
@@ -59,15 +55,15 @@ export const Edit: FC = () => {
 
   return (
     <Form>
-      <Form.Item {...formItemLayout} label="Name" required>
+      <Form.Item {...formItemLayout} label="Title" required>
         <Input
-          value={name}
+          value={title}
           onChange={(e) => {
-            setName(e.target.value);
+            setTitle(e.target.value);
           }}
         />
       </Form.Item>
-      <Form.Item {...formItemLayout} label="Code">
+      <Form.Item {...formItemLayout} label="Rule">
         <div style={{ border: "1px solid #eee" }}>
           <MonacoEditor
             language="javascript"
@@ -90,7 +86,15 @@ export const Edit: FC = () => {
           type="primary"
           onClick={async (e) => {
             // e.preventDefault()
-            await add(currentId, name, code, true);
+            if (isAdd) {
+              const id = await findNewRuleId();
+              dispatch({
+                type: "add",
+                payload: [id, { title, rule: JSON.parse(code) }],
+              });
+            } else if (isEdit) {
+              //
+            }
             navigate("/");
           }}
         >

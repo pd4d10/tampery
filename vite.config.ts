@@ -24,12 +24,8 @@ export default defineConfig({
         background: {
           service_worker: "src/background.ts",
         },
-        permissions: [
-          "webRequest",
-          "webRequestBlocking",
-          "<all_urls>",
-          "storage",
-        ],
+        permissions: ["webRequest", "storage", "declarativeNetRequest"],
+        host_permissions: ["<all_urls>"],
         action: {
           default_popup: "popup.html",
         },

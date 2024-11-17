@@ -23,11 +23,11 @@ export const sendMessage = (msg: types.Message) => {
 };
 
 export const examples = [
-  { name: "Blank", code: exampleBlank },
-  { name: "Change User-Agent", code: exampleChangeUserAgent },
+  { title: "Blank", code: exampleBlank },
+  { title: "Change User-Agent", code: exampleChangeUserAgent },
   {
-    name: "Remove Google Analytics UTM tokens",
+    title: "Remove Google Analytics UTM tokens",
     code: exampleRemoveGoogleAnalyticsUtmTokens,
   },
-  { name: "Allow CORS", code: exampleAllowCors },
+  { title: "Allow CORS", code: exampleAllowCors },
 ];

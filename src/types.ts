@@ -1,12 +1,13 @@
+import { RuleWithoutId } from "./dashboard/context";
+
 interface MessageBase {
   id: string;
 }
 
 interface MessageAdd extends MessageBase {
   type: "add";
-  name: string;
-  code: string;
   active: boolean;
+  rule: RuleWithoutId;
 }
 
 interface MessageDelete extends MessageBase {

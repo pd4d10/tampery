@@ -14,7 +14,7 @@ const AddScriptButton: FC = () => {
       overlay={
         <Menu>
           {examples.map((example, index) => (
-            <Menu.Item key={example.name}>
+            <Menu.Item key={example.title}>
               <a
                 href="#"
                 onClick={async (e) => {
@@ -22,7 +22,7 @@ const AddScriptButton: FC = () => {
                   navigate(`/add/${index}`);
                 }}
               >
-                {example.name}
+                {example.title}
               </a>
             </Menu.Item>
           ))}
@@ -60,7 +60,7 @@ export const App: React.FC = () => {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/edit/:id" element={<Edit />} />
-                  <Route path="/add/:index" element={<Edit />} />
+                  <Route path="/add/:id" element={<Edit />} />
                   <Route path="/about" element={<About />} />
                 </Routes>
               </div>

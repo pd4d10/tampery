@@ -1,37 +1,41 @@
-import React, { useContext, useState } from "react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { DataContext } from "./context";
 import { Divider, Modal, Switch, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
+import { Item } from "../utils";
 
 export const Home = () => {
-  const [open, setOpen] = useState(false);
-  const { data, remove, activate, deactivate, loadFromStorage } =
-    useContext(DataContext);
+  const {
+    state: { byId, disabledRules },
+    dispatch,
+  } = useContext(DataContext);
 
-  const dataSource = Object.entries(data).map(([id, value]) => ({
-    ...value,
-    id,
+  const dataSource = Object.entries(byId).map(([id, item]) => ({
+    ...item,
+    id: parseInt(id),
     key: id,
   }));
 
-  const records: ColumnsType = [
-    { title: "Name" },
+  const records: ColumnsType<Item & { id: number }> = [
+    { title: "Title" },
     {
-      title: "Active",
-      render: (text, record) => (
-        <Switch
-          checked={record.active}
-          onChange={async () => {
-            if (data[record.id].active) {
-              await deactivate(record.id);
-            } else {
-              await activate(record.id);
-            }
-            await loadFromStorage();
-          }}
-        />
-      ),
+      title: "Enabled",
+      render: (text, record) => {
+        const enabled = !disabledRules.includes(record.id);
+
+        return (
+          <Switch
+            checked={enabled}
+            onChange={async () => {
+              dispatch({
+                type: enabled ? "disable" : "enable",
+                payload: record.id,
+              });
+            }}
+          />
+        );
+      },
     },
     {
       title: "Actions",
@@ -49,8 +53,7 @@ export const Home = () => {
                 content:
                   "This operation will delete this item permanently. If you want to keep the code for future use, disable it instead.",
                 onOk: async () => {
-                  await remove(record.id);
-                  await loadFromStorage();
+                  dispatch({ type: "remove", payload: record.id });
                 },
                 onCancel() {},
               });

@@ -1,81 +1,94 @@
 import {
-  useState,
   useEffect,
   createContext,
   FC,
   PropsWithChildren,
+  useReducer,
+  Reducer,
 } from "react";
-import { sendMessage } from "./utils";
-import { storage } from "../utils";
+import { Item, byIdKey, ById } from "../utils";
+import { match } from "ts-pattern";
 
-export type Data = Record<
-  string,
-  { name: string; active: boolean; code: string }
->;
+type State = {
+  byId: ById;
+  disabledRules: number[];
+};
 
-function noop() {}
+type Action =
+  | { type: "load"; payload: ById }
+  | { type: "add"; payload: [number, Item] }
+  | { type: "remove"; payload: number }
+  | { type: "enable"; payload: number }
+  | { type: "disable"; payload: number };
 
-export const DataContext = createContext({
-  data: {} as Data,
-  activate: noop as (id: string) => void,
-  deactivate: noop as (id: string) => void,
-  remove: noop as (id: string) => void,
-  add: noop as (
-    id: string,
-    name: string,
-    code: string,
-    active: boolean,
-  ) => void,
-  loadFromStorage: noop,
+const initialState: State = {
+  byId: {},
+  disabledRules: [],
+};
+
+type MyReducer = Reducer<State, Action>;
+
+export const DataContext = createContext<{
+  state: State;
+  dispatch: React.Dispatch<Action>;
+}>({
+  state: initialState,
+  dispatch: () => {},
 });
 
 export const DataProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [data, setData] = useState<Data>({});
-
-  const loadFromStorage = async () => {
-    const newData = await storage.get<Data>();
-    setData(newData);
-  };
+  const [state, dispatch] = useReducer<MyReducer>(
+    (s, action) =>
+      match(action)
+        .with({ type: "load" }, ({ payload: byId }) => {
+          return { ...s, byId };
+        })
+        .with({ type: "add" }, ({ payload: [id, item] }) => {
+          return { ...s, byId: { ...s.byId, [id]: item } };
+        })
+        .with({ type: "remove" }, ({ payload: id }) => {
+          const { [id]: _, ...newById } = s.byId;
+          return {
+            ...s,
+            byId: newById,
+            // clean invalid ids
+            disabledRules: s.disabledRules.filter((ruleId) => ruleId !== id),
+          };
+        })
+        .with({ type: "enable" }, ({ payload: id }) => {
+          return {
+            ...s,
+            disabledRules: s.disabledRules.filter((ruleId) => ruleId !== id),
+          };
+        })
+        .with({ type: "disable" }, ({ payload: id }) => {
+          return { ...s, disabledRules: [...s.disabledRules, id] };
+        })
+        .otherwise(() => s),
+    initialState,
+  );
 
   useEffect(() => {
-    loadFromStorage();
+    chrome.storage.sync.get([byIdKey]).then((data) => {
+      dispatch({ type: "load", payload: data[byIdKey] ?? {} });
+    });
   }, []);
 
-  const activate = async (id: string) => {
-    await sendMessage({ type: "activate", id });
-    await loadFromStorage();
-  };
-
-  const deactivate = async (id: string) => {
-    await sendMessage({ type: "deactivate", id });
-    await loadFromStorage();
-  };
-
-  const remove = async (id: string) => {
-    await sendMessage({ type: "delete", id });
-    await loadFromStorage();
-  };
-
-  const add = async (
-    id: string,
-    name: string,
-    code: string,
-    active: boolean,
-  ) => {
-    await sendMessage({
-      type: "add",
-      id,
-      name,
-      code,
-      active,
+  useEffect(() => {
+    chrome.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: Object.keys(state.byId).map(Number),
+      addRules: Object.entries(state.byId).map(([key, item]) => {
+        return { ...item.rule, id: parseInt(key) };
+      }),
     });
-    await loadFromStorage();
-  };
+
+    chrome.storage.sync.set({ [byIdKey]: state.byId }).then(() => {
+      console.log("Storage set:", state.byId);
+    });
+  }, [state.byId]);
 
   return (
-    <DataContext.Provider
-      value={{ data, activate, deactivate, remove, add, loadFromStorage }}
-    >
+    <DataContext.Provider value={{ state, dispatch }}>
       {children}
     </DataContext.Provider>
   );
