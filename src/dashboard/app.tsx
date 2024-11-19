@@ -11,23 +11,15 @@ const AddScriptButton: FC = () => {
   const navigate = useNavigate();
   return (
     <Dropdown
-      overlay={
-        <Menu>
-          {examples.map((example, index) => (
-            <Menu.Item key={example.title}>
-              <a
-                href="#"
-                onClick={async (e) => {
-                  e.preventDefault();
-                  navigate(`/add/${index}`);
-                }}
-              >
-                {example.title}
-              </a>
-            </Menu.Item>
-          ))}
-        </Menu>
-      }
+      menu={{
+        items: examples.map((example, index) => ({
+          key: index,
+          title: example.title,
+          onClick: async () => {
+            navigate(`/add/${index}`);
+          },
+        })),
+      }}
       placement="bottomLeft"
     >
       <Button type="primary">Add script</Button>
