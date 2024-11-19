@@ -7,17 +7,6 @@ export type ById = Record<number, Item>;
 // the preivous version is `data`
 export const byIdKey = "byId";
 
-export const storage = {
-  get(): Promise<ById> {
-    return new Promise((resolve, reject) => {
-      chrome.storage.sync.get((items) => {
-        console.log("Storage get:", items[byIdKey]);
-        resolve(items[byIdKey] ?? {});
-      });
-    });
-  },
-};
-
 export const updateRules = async (
   options: chrome.declarativeNetRequest.UpdateRuleOptions,
 ) => {

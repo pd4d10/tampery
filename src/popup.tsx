@@ -1,24 +1,20 @@
 import { type FC, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { storage } from "./utils";
-import { sendMessage } from "./dashboard/utils";
-import { Data } from "./dashboard/context";
 import { List, Switch } from "antd";
 
 const App: FC = () => {
-  const [data, setData] = useState<Data>({});
+  const [data, setData] = useState({});
   const updateDataFromStorage = async () => {
-    const data = await storage.get<Data>();
-    setData(data);
+    //
   };
   useEffect(() => {
-    updateDataFromStorage();
+    //
   }, []);
   const handleToggleActive = async (id: string) => {
     if (data[id].active) {
-      await sendMessage({ type: "deactivate", id });
+      //
     } else {
-      await sendMessage({ type: "activate", id });
+      //
     }
     await updateDataFromStorage();
   };
