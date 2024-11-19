@@ -1,12 +1,12 @@
 import {
   useEffect,
   createContext,
-  FC,
-  PropsWithChildren,
+  type FC,
+  type PropsWithChildren,
   useReducer,
-  Reducer,
+  type Reducer,
 } from "react";
-import { Item, byIdKey, ById, parseRule } from "../utils";
+import { type Item, byIdKey, type ById, parseRule } from "../utils";
 import { match } from "ts-pattern";
 
 type State = {

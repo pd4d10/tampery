@@ -1,5 +1,5 @@
 import { HashRouter, Route, Link, Routes, useNavigate } from "react-router-dom";
-import React, { FC } from "react";
+import React, { type FC } from "react";
 import { Layout, Menu, Dropdown, Button } from "antd";
 import { About } from "./about";
 import { Home } from "./home";

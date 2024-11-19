@@ -5,9 +5,7 @@ import pkg from "./package.json";
 export default defineConfig({
   build: {
     rollupOptions: {
-      input: {
-        welcome: "dashboard.html",
-      },
+      input: ["dashboard.html"],
     },
   },
   plugins: [

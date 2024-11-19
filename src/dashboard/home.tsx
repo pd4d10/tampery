@@ -2,8 +2,8 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { DataContext } from "./context";
 import { Divider, Modal, Switch, Table } from "antd";
-import { ColumnsType } from "antd/es/table";
-import { Item } from "../utils";
+import type { ColumnsType } from "antd/es/table";
+import type { Item } from "../utils";
 
 export const Home = () => {
   const {

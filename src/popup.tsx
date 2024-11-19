@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { type FC, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { storage } from "./utils";
 import { sendMessage } from "./dashboard/utils";

@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, useContext } from "react";
+import { useState, useEffect, type FC, useContext } from "react";
 import MonacoEditor from "react-monaco-editor";
 import { examples } from "./utils";
 import { useMatch, useParams } from "react-router-dom";
