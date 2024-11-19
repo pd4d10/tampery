@@ -6,6 +6,7 @@ import { Home } from "./home";
 import { Edit } from "./edit";
 import { examples } from "./utils";
 import { DataProvider } from "./context";
+import "./app.css";
 
 const AddScriptButton: FC = () => {
   const navigate = useNavigate();
@@ -32,22 +33,20 @@ export const App: React.FC = () => {
     <DataProvider>
       <HashRouter>
         <Layout style={{ minHeight: "100%" }}>
-          <div style={{ background: "#fff", padding: "0 50px" }}>
+          <Layout.Header style={{ display: "flex", alignItems: "center" }}>
             <div className="logo" />
             <Menu
+              theme="dark"
               mode="horizontal"
               defaultSelectedKeys={["/"]}
               items={[
                 { key: "/", label: <Link to="/">Home</Link> },
                 { key: "/about", label: <Link to="/about">About</Link> },
-                {
-                  key: "/add",
-                  label: <AddScriptButton />,
-                  style: { float: "right" },
-                },
               ]}
             />
-          </div>
+            <div style={{ flexGrow: 1 }} />
+            <AddScriptButton />
+          </Layout.Header>
           <Layout.Content style={{ padding: "20px 50px 0" }}>
             <div style={{ background: "#fff", padding: 24, minHeight: 280 }}>
               <Routes>
