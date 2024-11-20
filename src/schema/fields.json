@@ -1,0 +1,655 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "DomainType": {
+      "description": "TThis describes whether the request is first or third party to the frame in which it originated. A request is said to be first party if it has the same domain (eTLD+1) as the frame in which the request originated.",
+      "enum": [
+        "firstParty",
+        "thirdParty"
+      ],
+      "type": "string"
+    },
+    "ExtensionActionOptions": {
+      "additionalProperties": false,
+      "properties": {
+        "displayActionCountAsBadgeText": {
+          "description": "Whether to automatically display the action count for a page as the extension's badge text. This preference is persisted across sessions.",
+          "type": "boolean"
+        },
+        "tabUpdate": {
+          "$ref": "#/definitions/TabActionCountUpdate",
+          "description": "Details of how the tab's action count should be adjusted."
+        }
+      },
+      "type": "object"
+    },
+    "HeaderOperation": {
+      "description": "This describes the possible operations for a \"modifyHeaders\" rule.",
+      "enum": [
+        "append",
+        "set",
+        "remove"
+      ],
+      "type": "string"
+    },
+    "IsRegexSupportedResult": {
+      "additionalProperties": false,
+      "properties": {
+        "isSupported": {
+          "type": "boolean"
+        },
+        "reason": {
+          "$ref": "#/definitions/UnsupportedRegexReason",
+          "description": "Specifies the reason why the regular expression is not supported. Only provided if isSupported is false."
+        }
+      },
+      "required": [
+        "isSupported"
+      ],
+      "type": "object"
+    },
+    "MatchedRule": {
+      "additionalProperties": false,
+      "properties": {
+        "ruleId": {
+          "description": "A matching rule's ID.",
+          "type": "number"
+        },
+        "rulesetId": {
+          "description": "ID of the Ruleset this rule belongs to. For a rule originating from the set of dynamic rules, this will be equal to DYNAMIC_RULESET_ID.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ruleId",
+        "rulesetId"
+      ],
+      "type": "object"
+    },
+    "MatchedRuleInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "rule": {
+          "$ref": "#/definitions/MatchedRule"
+        },
+        "tabId": {
+          "description": "The tabId of the tab from which the request originated if the tab is still active. Else -1.",
+          "type": "number"
+        },
+        "timeStamp": {
+          "description": "The time the rule was matched. Timestamps will correspond to the Javascript convention for times, i.e. number of milliseconds since the epoch.",
+          "type": "number"
+        }
+      },
+      "required": [
+        "rule",
+        "tabId",
+        "timeStamp"
+      ],
+      "type": "object"
+    },
+    "MatchedRuleInfoDebug": {
+      "additionalProperties": false,
+      "properties": {
+        "request": {
+          "$ref": "#/definitions/RequestDetails",
+          "description": "Details about the request for which the rule was matched."
+        },
+        "rule": {
+          "$ref": "#/definitions/MatchedRule"
+        }
+      },
+      "required": [
+        "request",
+        "rule"
+      ],
+      "type": "object"
+    },
+    "MatchedRulesFilter": {
+      "additionalProperties": false,
+      "properties": {
+        "minTimeStamp": {
+          "description": "If specified, only matches rules after the given timestamp.",
+          "type": "number"
+        },
+        "tabId": {
+          "description": "If specified, only matches rules for the given tab. Matches rules not associated with any active tab if set to -1.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "ModifyHeaderInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "header": {
+          "description": "The name of the header to be modified.",
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/definitions/HeaderOperation",
+          "description": "The operation to be performed on a header."
+        },
+        "value": {
+          "description": "The new value for the header. Must be specified for append and set operations.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "header",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "QueryKeyValue": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "value"
+      ],
+      "type": "object"
+    },
+    "QueryTransform": {
+      "additionalProperties": false,
+      "properties": {
+        "addOrReplaceParams": {
+          "description": "The list of query key-value pairs to be added or replaced.",
+          "items": {
+            "$ref": "#/definitions/QueryKeyValue"
+          },
+          "type": "array"
+        },
+        "removeParams": {
+          "description": "The list of query keys to be removed.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "Redirect": {
+      "additionalProperties": false,
+      "properties": {
+        "extensionPath": {
+          "description": "Path relative to the extension directory. Should start with '/'.",
+          "type": "string"
+        },
+        "regexSubstitution": {
+          "description": "Substitution pattern for rules which specify a regexFilter. The first match of regexFilter within the url will be replaced with this pattern. Within regexSubstitution, backslash-escaped digits (\\1 to \\9) can be used to insert the corresponding capture groups. \\0 refers to the entire matching text.",
+          "type": "string"
+        },
+        "transform": {
+          "$ref": "#/definitions/URLTransform",
+          "description": "Url transformations to perform."
+        },
+        "url": {
+          "description": "The redirect url. Redirects to JavaScript urls are not allowed.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "RegexOptions": {
+      "additionalProperties": false,
+      "properties": {
+        "isCaseSensitive": {
+          "description": "Whether the regex specified is case sensitive. Default is true.",
+          "type": "boolean"
+        },
+        "regex": {
+          "description": "The regular expression to check.",
+          "type": "string"
+        },
+        "requireCapturing": {
+          "description": "Whether the regex specified requires capturing. Capturing is only required for redirect rules which specify a regexSubstitution action. The default is false.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "regex"
+      ],
+      "type": "object"
+    },
+    "RequestDetails": {
+      "additionalProperties": false,
+      "properties": {
+        "frameId": {
+          "description": "The value 0 indicates that the request happens in the main frame; a positive value indicates the ID of a subframe in which the request happens. If the document of a (sub-)frame is loaded (type is main_frame or sub_frame), frameId indicates the ID of this frame, not the ID of the outer frame. Frame IDs are unique within a tab.",
+          "type": "number"
+        },
+        "initiator": {
+          "description": "The origin where the request was initiated. This does not change through redirects. If this is an opaque origin, the string 'null' will be used.",
+          "type": "string"
+        },
+        "method": {
+          "description": "Standard HTTP method.",
+          "type": "string"
+        },
+        "partentFrameId": {
+          "description": "ID of frame that wraps the frame which sent the request. Set to -1 if no parent frame exists.",
+          "type": "number"
+        },
+        "requestId": {
+          "description": "The ID of the request. Request IDs are unique within a browser session.",
+          "type": "string"
+        },
+        "tabId": {
+          "description": "The ID of the tab in which the request takes place. Set to -1 if the request isn't related to a tab.",
+          "type": "number"
+        },
+        "type": {
+          "$ref": "#/definitions/ResourceType",
+          "description": "The resource type of the request."
+        },
+        "url": {
+          "description": "The URL of the request.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "frameId",
+        "method",
+        "partentFrameId",
+        "requestId",
+        "tabId",
+        "type",
+        "url"
+      ],
+      "type": "object"
+    },
+    "RequestMethod": {
+      "description": "This describes the HTTP request method of a network request.",
+      "enum": [
+        "connect",
+        "delete",
+        "get",
+        "head",
+        "options",
+        "patch",
+        "post",
+        "put"
+      ],
+      "type": "string"
+    },
+    "ResourceType": {
+      "description": "This describes the resource type of the network request.",
+      "enum": [
+        "main_frame",
+        "sub_frame",
+        "stylesheet",
+        "script",
+        "image",
+        "font",
+        "object",
+        "xmlhttprequest",
+        "ping",
+        "csp_report",
+        "media",
+        "websocket",
+        "other"
+      ],
+      "type": "string"
+    },
+    "Rule": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "$ref": "#/definitions/RuleAction",
+          "description": "The action to take if this rule is matched."
+        },
+        "condition": {
+          "$ref": "#/definitions/RuleCondition",
+          "description": "The condition under which this rule is triggered."
+        },
+        "id": {
+          "description": "An id which uniquely identifies a rule. Mandatory and should be >= 1.",
+          "type": "number"
+        },
+        "priority": {
+          "description": "Rule priority. Defaults to 1. When specified, should be >= 1.",
+          "type": "number"
+        }
+      },
+      "required": [
+        "action",
+        "condition",
+        "id"
+      ],
+      "type": "object"
+    },
+    "RuleAction": {
+      "additionalProperties": false,
+      "properties": {
+        "redirect": {
+          "$ref": "#/definitions/Redirect",
+          "description": "Describes how the redirect should be performed. Only valid for redirect rules."
+        },
+        "requestHeaders": {
+          "description": "The request headers to modify for the request. Only valid if RuleActionType is \"modifyHeaders\".",
+          "items": {
+            "$ref": "#/definitions/ModifyHeaderInfo"
+          },
+          "type": "array"
+        },
+        "responseHeaders": {
+          "description": "The response headers to modify for the request. Only valid if RuleActionType is \"modifyHeaders\".",
+          "items": {
+            "$ref": "#/definitions/ModifyHeaderInfo"
+          },
+          "type": "array"
+        },
+        "type": {
+          "$ref": "#/definitions/RuleActionType",
+          "description": "The type of action to perform."
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "RuleActionType": {
+      "description": "Describes the kind of action to take if a given RuleCondition matches.",
+      "enum": [
+        "block",
+        "redirect",
+        "allow",
+        "upgradeScheme",
+        "modifyHeaders",
+        "allowAllRequests"
+      ],
+      "type": "string"
+    },
+    "RuleCondition": {
+      "additionalProperties": false,
+      "properties": {
+        "domainType": {
+          "$ref": "#/definitions/DomainType",
+          "description": "Specifies whether the network request is first-party or third-party to the domain from which it originated. If omitted, all requests are accepted."
+        },
+        "domains": {
+          "deprecated": "since Chrome 101. Use initiatorDomains instead.\n\nThe rule will only match network requests originating from the list of domains.\nIf the list is omitted, the rule is applied to requests from all domains.\nAn empty list is not allowed.\n\nNotes:\nSub-domains like \"a.example.com\" are also allowed.\nThe entries must consist of only ascii characters.\nUse punycode encoding for internationalized domains.\nThis matches against the request initiator and not the request url.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "excludedDomains": {
+          "deprecated": "since Chrome 101. Use excludedInitiatorDomains instead\n\nThe rule will not match network requests originating from the list of excludedDomains.\nIf the list is empty or omitted, no domains are excluded.\nThis takes precedence over domains.\n\nNotes:\nSub-domains like \"a.example.com\" are also allowed.\nThe entries must consist of only ascii characters.\nUse punycode encoding for internationalized domains.\nThis matches against the request initiator and not the request url.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "excludedInitiatorDomains": {
+          "description": "The rule will not match network requests originating from the list of excludedInitiatorDomains. If the list is empty or omitted, no domains are excluded. This takes precedence over initiatorDomains.\n\nNotes: Sub-domains like \"a.example.com\" are also allowed. The entries must consist of only ascii characters. Use punycode encoding for internationalized domains. This matches against the request initiator and not the request url.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "excludedRequestDomains": {
+          "description": "The rule will not match network requests when the domains matches one from the list of excludedRequestDomains. If the list is empty or omitted, no domains are excluded. This takes precedence over requestDomains.\n\nNotes: Sub-domains like \"a.example.com\" are also allowed. The entries must consist of only ascii characters. Use punycode encoding for internationalized domains.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "excludedRequestMethods": {
+          "description": "List of request methods which the rule won't match. Only one of requestMethods and excludedRequestMethods should be specified. If neither of them is specified, all request methods are matched.",
+          "items": {
+            "$ref": "#/definitions/RequestMethod"
+          },
+          "type": "array"
+        },
+        "excludedResourceTypes": {
+          "description": "List of resource types which the rule won't match. Only one of  {@link  chrome.declarativeNetRequest.RuleCondition.resourceTypes  }  and  {@link  chrome.declarativeNetRequest.RuleCondition.excludedResourceTypes  }  should be specified. If neither of them is specified, all resource types except \"main_frame\" are blocked.",
+          "items": {
+            "$ref": "#/definitions/ResourceType"
+          },
+          "type": "array"
+        },
+        "excludedTabIds": {
+          "description": "List of  {@link  chrome.tabs.Tab.id  }  which the rule should not match. An ID of  {@link  chrome.tabs.TAB_ID_NONE  }  excludes requests which don't originate from a tab. Only supported for session-scoped rules.",
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "initiatorDomains": {
+          "description": "The rule will only match network requests originating from the list of initiatorDomains. If the list is omitted, the rule is applied to requests from all domains. An empty list is not allowed.\n\nNotes: Sub-domains like \"a.example.com\" are also allowed. The entries must consist of only ascii characters. Use punycode encoding for internationalized domains. This matches against the request initiator and not the request url.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "isUrlFilterCaseSensitive": {
+          "default": "false Before Chrome 118 the default was true.",
+          "description": "Whether the urlFilter or regexFilter (whichever is specified) is case sensitive.",
+          "type": "boolean"
+        },
+        "regexFilter": {
+          "description": "Regular expression to match against the network request url. This follows the RE2 syntax.\n\nNote: Only one of urlFilter or regexFilter can be specified.\n\nNote: The regexFilter must be composed of only ASCII characters. This is matched against a url where the host is encoded in the punycode format (in case of internationalized domains) and any other non-ascii characters are url encoded in utf-8.",
+          "type": "string"
+        },
+        "requestDomains": {
+          "description": "The rule will only match network requests when the domain matches one from the list of requestDomains. If the list is omitted, the rule is applied to requests from all domains. An empty list is not allowed.\n\nNotes: Sub-domains like \"a.example.com\" are also allowed. The entries must consist of only ascii characters. Use punycode encoding for internationalized domains.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "requestMethods": {
+          "description": "List of HTTP request methods which the rule can match. An empty list is not allowed. Note: Specifying a  {@link  chrome.declarativeNetRequest.RuleCondition.requestMethods  }  rule condition will also exclude non-HTTP(s) requests, whereas specifying  {@link  chrome.declarativeNetRequest.RuleCondition.excludedRequestMethods  }  will not.",
+          "items": {
+            "$ref": "#/definitions/RequestMethod"
+          },
+          "type": "array"
+        },
+        "resourceTypes": {
+          "description": "List of resource types which the rule can match. An empty list is not allowed.\n\nNote: this must be specified for allowAllRequests rules and may only include the sub_frame and main_frame resource types.",
+          "items": {
+            "$ref": "#/definitions/ResourceType"
+          },
+          "type": "array"
+        },
+        "tabIds": {
+          "description": "List of  {@link  chrome.tabs.Tab.id  }  which the rule should not match. An ID of  {@link  chrome.tabs.TAB_ID_NONE  }  excludes requests which don't originate from a tab. An empty list is not allowed. Only supported for session-scoped rules.",
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "urlFilter": {
+          "description": "The pattern which is matched against the network request url. Supported constructs:\n\n'*' : Wildcard: Matches any number of characters.\n\n'|' : Left/right anchor: If used at either end of the pattern, specifies the beginning/end of the url respectively.\n\n'||' : Domain name anchor: If used at the beginning of the pattern, specifies the start of a (sub-)domain of the URL.\n\n'^' : Separator character: This matches anything except a letter, a digit or one of the following: _ - . %. This can also match the end of the URL.\n\nTherefore urlFilter is composed of the following parts: (optional Left/Domain name anchor) + pattern + (optional Right anchor).\n\nIf omitted, all urls are matched. An empty string is not allowed.\n\nA pattern beginning with || is not allowed. Use instead.\n\nNote: Only one of urlFilter or regexFilter can be specified.\n\nNote: The urlFilter must be composed of only ASCII characters. This is matched against a url where the host is encoded in the punycode format (in case of internationalized domains) and any other non-ascii characters are url encoded in utf-8. For example, when the request url is http://abc.рф?q=ф, the urlFilter will be matched against the url http://abc.xn--p1ai/?q=%D1%84.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "RulesMatchedDetails": {
+      "additionalProperties": false,
+      "properties": {
+        "rulesMatchedInfo": {
+          "description": "Rules matching the given filter.",
+          "items": {
+            "$ref": "#/definitions/MatchedRuleInfo"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "rulesMatchedInfo"
+      ],
+      "type": "object"
+    },
+    "Ruleset": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "description": "Whether the ruleset is enabled by default.",
+          "type": "boolean"
+        },
+        "id": {
+          "description": "A non-empty string uniquely identifying the ruleset. IDs beginning with '_' are reserved for internal use.",
+          "type": "string"
+        },
+        "path": {
+          "description": "The path of the JSON ruleset relative to the extension directory.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "id",
+        "path"
+      ],
+      "type": "object"
+    },
+    "TabActionCountUpdate": {
+      "additionalProperties": false,
+      "properties": {
+        "increment": {
+          "description": "The amount to increment the tab's action count by. Negative values will decrement the count",
+          "type": "number"
+        },
+        "tabId": {
+          "description": "The tab for which to update the action count.",
+          "type": "number"
+        }
+      },
+      "required": [
+        "increment",
+        "tabId"
+      ],
+      "type": "object"
+    },
+    "URLTransform": {
+      "additionalProperties": false,
+      "properties": {
+        "fragment": {
+          "description": "The new fragment for the request. Should be either empty, in which case the existing fragment is cleared; or should begin with '#'.",
+          "type": "string"
+        },
+        "host": {
+          "description": "The new host for the request.",
+          "type": "string"
+        },
+        "password": {
+          "description": "The new password for the request.",
+          "type": "string"
+        },
+        "path": {
+          "description": "The new path for the request. If empty, the existing path is cleared.",
+          "type": "string"
+        },
+        "port": {
+          "description": "The new port for the request. If empty, the existing port is cleared.",
+          "type": "string"
+        },
+        "query": {
+          "description": "The new query for the request. Should be either empty, in which case the existing query is cleared; or should begin with '?'.",
+          "type": "string"
+        },
+        "queryTransform": {
+          "$ref": "#/definitions/QueryTransform",
+          "description": "Add, remove or replace query key-value pairs."
+        },
+        "scheme": {
+          "description": "The new scheme for the request. Allowed values are \"http\", \"https\", \"ftp\" and \"chrome-extension\".",
+          "type": "string"
+        },
+        "username": {
+          "description": "The new username for the request.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "UnsupportedRegexReason": {
+      "description": "Describes the reason why a given regular expression isn't supported.",
+      "enum": [
+        "syntaxError",
+        "memoryLimitExceeded"
+      ],
+      "type": "string"
+    },
+    "UpdateRuleOptions": {
+      "additionalProperties": false,
+      "properties": {
+        "addRules": {
+          "description": "Rules to add.",
+          "items": {
+            "$ref": "#/definitions/Rule"
+          },
+          "type": "array"
+        },
+        "removeRuleIds": {
+          "description": "IDs of the rules to remove. Any invalid IDs will be ignored.",
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "UpdateRulesetOptions": {
+      "additionalProperties": false,
+      "properties": {
+        "disableRulesetIds": {
+          "description": "The set of ids corresponding to a static Ruleset that should be disabled.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "enableRulesetIds": {
+          "description": "The set of ids corresponding to a static Ruleset that should be enabled.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "UpdateStaticRulesOptions": {
+      "additionalProperties": false,
+      "properties": {
+        "disableRuleIds": {
+          "description": "Set of ids corresponding to rules in the Ruleset to disable.",
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "enableRuleIds": {
+          "description": "Set of ids corresponding to rules in the Ruleset to enable.",
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "rulesetId": {
+          "description": "The id corresponding to a static Ruleset.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rulesetId"
+      ],
+      "type": "object"
+    }
+  }
+}

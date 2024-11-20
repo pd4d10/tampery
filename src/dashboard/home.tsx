@@ -4,6 +4,20 @@ import { DataContext } from "./context";
 import { Divider, Modal, Switch, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { Item } from "../utils";
+import Form from "@rjsf/antd";
+import type { RJSFSchema } from "@rjsf/utils";
+import validator from "@rjsf/validator-ajv8";
+import schema from "../schema/fields.json";
+
+// {
+//   title: "Todo",
+//   type: "object",
+//   required: ["title"],
+//   properties: {
+//     title: { type: "string", title: "Title", default: "A new task" },
+//     done: { type: "boolean", title: "Done?", default: false },
+//   },
+// };
 
 export const Home = () => {
   const {
@@ -68,6 +82,19 @@ export const Home = () => {
 
   return (
     <div>
+      <Form
+        schema={schema.definitions.UpdateRuleOptions}
+        validator={validator}
+        onChange={(data) => {
+          //
+        }}
+        onSubmit={(data) => {
+          //
+        }}
+        onError={(errors) => {
+          //
+        }}
+      />
       <div>
         {dataSource.length ? (
           <div style={{ marginTop: 20 }}>
